@@ -8,7 +8,8 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "../externals/stb_image/stb_image.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -52,6 +53,7 @@ int main()
 		glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+	
 
 	unsigned int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderID, 1, &fragmentShader, NULL);

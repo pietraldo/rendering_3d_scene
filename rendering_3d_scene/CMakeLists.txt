@@ -1,4 +1,4 @@
-﻿add_executable (rendering_3d_scene main.cpp)
+﻿add_executable (rendering_3d_scene main.cpp ../externals/stb_image/stb_image.h)
 
 
 target_include_directories(rendering_3d_scene PRIVATE ${CMAKE_SOURCE_DIR}/rendering_3d_scene)
