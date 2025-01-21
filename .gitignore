@@ -16,7 +16,7 @@
 CMakeCache.txt
 *.sln
 *.cmake
-externals/glm
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
