@@ -9,196 +9,126 @@
 #include "backends/imgui_impl_opengl3.h"
 
 
-#include <cuda_runtime.h>
-#include <device_launch_parameters.h>
 
-#include "kernels.cuh"
-#include "scene.h"
-#include "Camera.h"
-#include "Constants.h"
-#include "Window.h"
-#include "Tree.h"
-#include "TreeParser.h"
-#include "kernels.cuh"
-#include "GPUdata.h"
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
 
-float GetTimePassed(float& last);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+// settings
+const unsigned int SCR_WIDTH = 800;
+const unsigned int SCR_HEIGHT = 600;
 
-GPUdata MallocCopyDataToGPU(TreeParser parser);
-void FreeMemory(GPUdata data);
-
-Scene scene;
-int main(int argc, char* argv[]) {
-	printf("%s Starting...\n", argv[0]);
-	if (argc < 2)
-	{
-		cout << "Please provide path to the model file" << endl;
-		return -1;
-	}
-	
-	TreeParser parser(argv[1]);
-	if (parser.Parse())
-	{
-		cout << "Parsing successful" << endl;
-	}
-	else
-	{
-		cout << "Parsing failed" << endl;
-		return -1;
-	}
-
-	Window window(SCR_WIDTH, SCR_HEIGHT);
-
-	scene=Scene();
-	scene.SetCamera(Camera(vec3(0, 0, -8)));
-	scene.SetLight(Light(vec3(0, 0, -4), vec3(1, 1, 1)));
-
-	window.RegisterTexture(scene.GetTexture());
-	
-	glfwSetScrollCallback(window.GetWindow(), scroll_callback);
-
-
-	GPUdata gpuData = MallocCopyDataToGPU(parser);
-
-	float last = glfwGetTime();
-	while (!window.ShouldCloseWindow()) {
-
-		float dt = GetTimePassed(last);
-
-		window.ProccessInput(scene, dt);
-
-		scene.Update();
-
-		scene.UpdateTextureGpu(gpuData);
-		
-
-		// copy texture to cpu
-		cudaMemcpy(scene.GetTexture().data.data(), gpuData.dev_texture_data, TEXTURE_WIDHT * TEXTURE_HEIGHT * 3 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
-
-		// copy to opengl
-		glBindTexture(GL_TEXTURE_2D, scene.GetTexture().id);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, TEXTURE_WIDHT, TEXTURE_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, scene.GetTexture().data.data());
-
-		window.ClearScreen();
-		window.Render(scene);
-
-		
-	}
-
-	FreeMemory(gpuData);
-
-	return 0;
-}
-
-
-GPUdata MallocCopyDataToGPU(TreeParser parser)
+int main()
 {
-	GPUdata data;
+    // glfw: initialize and configure
+    // ------------------------------
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	int SPHERE_COUNT = parser.num_spheres;
-	int CUBES_COUNT = parser.num_cubes;
-	int CYLINDER_COUNT = parser.num_cylinders;
-	int SHAPE_COUNT = SPHERE_COUNT + CUBES_COUNT + CYLINDER_COUNT;
-	int NODE_COUNT = 2 * SHAPE_COUNT - 1;
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
 
-	data.ShapeCount = SHAPE_COUNT;
+    // glfw window creation
+    // --------------------
+    GLFWwindow* window;
 
-	Sphere* spheres = parser.spheres.data();
-	Cube* cubes = parser.cubes.data();
-	Cylinder* cylinders = parser.cylinders.data();
+    if (!glfwInit()) {
+        std::cerr << "Failed to initialize GLFW\n";
+    }
 
-	cudaError_t err;
+    // Configure GLFW
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	err = cudaMalloc(&data.dev_spheres, MAX_SHAPES * sizeof(Sphere));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_spheres error: %s\n", cudaGetErrorString(err));
-	}
+    // Create window
+    window = glfwCreateWindow(800, 600, "Texture Viewer", NULL, NULL);
+    if (!window) {
+        std::cerr << "Failed to create GLFW window\n";
+        glfwTerminate();
+    }
 
-	err = cudaMalloc(&data.dev_cubes, MAX_SHAPES * sizeof(Cube));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_cubes error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_cylinders, MAX_SHAPES * sizeof(Cylinder));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_cylinders error: %s\n", cudaGetErrorString(err));
-	}
+    glfwMakeContextCurrent(window);
 
-	parser.AttachShapes(data.dev_cubes, data.dev_spheres, data.dev_cylinders);
+    // Load OpenGL functions using GLAD
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD\n";
+    }
 
-	err = cudaMalloc(&data.dev_tree, NODE_COUNT * sizeof(Node));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_projection, 16 * sizeof(float));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_view, 16 * sizeof(float));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_camera_position, 3 * sizeof(float));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_light_postion, 3 * sizeof(float));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_texture_data, TEXTURE_WIDHT * TEXTURE_HEIGHT * 3 * sizeof(unsigned char));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-	err = cudaMalloc(&data.dev_intersection_result, TEXTURE_WIDHT * TEXTURE_HEIGHT * sizeof(float));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
-	err = cudaMalloc(&data.dev_parts, 4 * (SHAPE_COUNT - 1) * sizeof(int));
-	if (err != cudaSuccess) {
-		printf("cudaMalloc dev_tree error: %s\n", cudaGetErrorString(err));
-	}
+    // Initialize backends
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    // render loop
+    // -----------
+    while (!glfwWindowShouldClose(window))
+    {
+        // input
+        // -----
+        processInput(window);
+
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
 
-	cudaMemcpy(data.dev_tree, parser.nodes.data(), NODE_COUNT * sizeof(Node), cudaMemcpyHostToDevice);
-	cudaMemcpy(data.dev_texture_data, scene.GetTexture().data.data(), TEXTURE_WIDHT * TEXTURE_HEIGHT * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice);
-	cudaMemcpy(data.dev_parts, parser.parts, 4 * (SHAPE_COUNT - 1) * sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemcpy(data.dev_spheres, spheres, MAX_SHAPES * sizeof(Sphere), cudaMemcpyHostToDevice);
-	cudaMemcpy(data.dev_cubes, cubes, MAX_SHAPES * sizeof(Cube), cudaMemcpyHostToDevice);
-	cudaMemcpy(data.dev_cylinders, cylinders, MAX_SHAPES * sizeof(Cylinder), cudaMemcpyHostToDevice);
+        // Start ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+		float simple_slider = 0.0f;
+        // Render ImGui window
+        ImVec2 m_WindowSize = ImVec2(200, 200);
+        ImGui::SetNextWindowSize(m_WindowSize);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0.0f, 0.0f });
+        
 
-	return data;
+
+        ImGui::Begin("Light");
+        ImGui::SliderFloat("Light angle", &simple_slider, -2 * 3.14159265, 2 * 3.14159265);
+        ImGui::End();
+        ImGui::PopStyleVar();
+        
+
+
+        // Render ImGui data
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
+    glfwTerminate();
+    return 0;
 }
 
-void FreeMemory(GPUdata data)
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow* window)
 {
-	cudaFree(data.dev_spheres);
-	cudaFree(data.dev_texture_data);
-	cudaFree(data.dev_projection);
-	cudaFree(data.dev_view);
-	cudaFree(data.dev_camera_position);
-	cudaFree(data.dev_light_postion);
-	cudaFree(data.dev_tree);
-	cudaFree(data.dev_intersection_result);
-	cudaFree(data.dev_parts);
-	cudaFree(data.dev_cubes);
-	cudaFree(data.dev_cylinders);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 }
 
-float GetTimePassed(float& last) {
-	auto time = glfwGetTime();
-	float dt = time - last;
-	last = time;
-	return dt;
-}
-
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	Camera& camera = scene.GetCamera();
-	camera.fov -= (float)yoffset;
-	if (camera.fov > 90)
-		camera.fov = 90;
-	if (camera.fov < 1)
-		camera.fov = 1;
+    // make sure the viewport matches the new window dimensions; note that width and 
+    // height will be significantly larger than specified on retina displays.
+    glViewport(0, 0, width, height);
 }
