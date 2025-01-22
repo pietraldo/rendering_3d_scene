@@ -8,6 +8,10 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "../externals/stb_image/stb_image.h"
 
@@ -26,9 +30,12 @@ const char* vertexShader =
 "layout (location = 2) in vec2 aTexCoord;\n"
 "out vec3 ourColor;"
 "out vec2 TexCoord;"
+"uniform mat4 model;"
+"uniform mat4 view;"
+"uniform mat4 projection;"
 "void main()\n"
 "{\n"
-"gl_Position = vec4(aPos, 1.0);\n"
+"gl_Position = projection*view*model*vec4(aPos, 1.0);\n"
 "ourColor=aColor;\n"
 "TexCoord=aTexCoord;\n"
 "}\n";
@@ -48,7 +55,7 @@ const char* fragmentShader =
 int main()
 {
 	GLFWwindow* window = CreateWindow(SCR_WIDTH, SCR_HEIGHT, "Rendering 3D scene");
-    if (window == nullptr) return -1;
+	if (window == nullptr) return -1;
 
 	// shaders
 	unsigned int vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -63,7 +70,7 @@ int main()
 		glGetShaderInfoLog(vertexShaderID, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
-	
+
 
 	unsigned int fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShaderID, 1, &fragmentShader, NULL);
@@ -92,7 +99,7 @@ int main()
 	glDeleteShader(vertexShaderID);
 	glDeleteShader(fragmentShaderID);
 
-	
+
 	unsigned int texture1, texture2;
 	glGenTextures(1, &texture1);
 
@@ -142,7 +149,7 @@ int main()
 
 	glUniform1i(glGetUniformLocation(shaderProgramID, "texture1"), 0);
 	glUniform1i(glGetUniformLocation(shaderProgramID, "texture2"), 1);
-	
+
 
 	// CREATING BUFFERS
 	float vertices[] = {
@@ -156,6 +163,8 @@ int main()
 		0, 1, 3,   // first triangle
 		1, 2, 3    // second triangle
 	};
+
+
 
 	unsigned int VAO, VBO, EBO;
 	glGenVertexArrays(1, &VAO);
@@ -178,8 +187,27 @@ int main()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+	glm::mat4 projection;
+	projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+
+
+	unsigned int modelLoc = glGetUniformLocation(shaderProgramID, "model");
+	unsigned int viewLoc = glGetUniformLocation(shaderProgramID, "view");
+	unsigned int projectionLoc = glGetUniformLocation(shaderProgramID, "projection");
+	
+	glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -207,8 +235,8 @@ int main()
 	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(shaderProgramID);
 
-    glfwTerminate();
-    return 0;
+	glfwTerminate();
+	return 0;
 }
 
 GLFWwindow* CreateWindow(int width, int height, const char* title)
@@ -243,12 +271,12 @@ GLFWwindow* CreateWindow(int width, int height, const char* title)
 
 void processInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    glViewport(0, 0, width, height);
+	glViewport(0, 0, width, height);
 }
