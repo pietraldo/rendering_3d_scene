@@ -7,4 +7,5 @@ add_subdirectory(externals/glfw)
 add_subdirectory(externals/glad)
 add_subdirectory(externals/imgui)
 add_subdirectory(externals/glm)
+add_subdirectory(externals/assimp)
 

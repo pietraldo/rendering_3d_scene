@@ -9,3 +9,6 @@
 	path = externals/glm
 	url = https://github.com/icaven/glm.git
 	ignore = dirty
+[submodule "externals/assimp"]
+	path = externals/assimp
+	url = https://github.com/assimp/assimp.git
