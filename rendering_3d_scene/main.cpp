@@ -67,30 +67,24 @@ int main()
 
 	
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
-	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f, 3.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f,-3.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 
 	// create a few cubes
 	for (int i = 0; i < 20; i++)
 	{
 		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
-		glm::vec3 scale = glm::vec3(rand() % 20/10.0f, rand() % 20/10.0f, rand() % 20/10.0f);
+		glm::vec3 scale = glm::vec3(rand() % 20/10.0f+0.2f, rand() % 20/10.0f + 0.2f, rand() % 20/10.0f + 0.2f);
 		//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 color = glm::vec3((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f);
+		//glm::vec3 color = glm::vec3((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f);
+		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 rotation = glm::vec3(rand() % 360, rand() % 360, rand() % 360);
 		Cube* cube = new Cube(position, scale, color, rotation);
 		scene.AddCube(cube);
 	}
 
-	Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(0.0f, 40.0f, 0.0f));
-	Cube cube2(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 1.0f, 0.5f), glm::vec3(0.0f, 40.0f, 0.0f));
-	Cube cube3(glm::vec3(-2.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.0f, 10.0f, 70.0f));
-	Cube cube4(glm::vec3(0.0f, 5.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.5f), glm::vec3(30.0f, 30.0f, 0.0f));
+
 	scene.AddLight(light1);
 	scene.AddCamera(&camera1);
-	scene.AddCube(&cube1);
-	scene.AddCube(&cube2);
-	scene.AddCube(&cube3);
-	scene.AddCube(&cube4);
 	scene.SetActiveCamera(0);
 
 	unsigned int VBO, cubeVAO;
@@ -123,7 +117,7 @@ int main()
 
 		processInput(window);
 
-		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
@@ -133,11 +127,32 @@ int main()
 		ourShader.setMat4("projection", projection);
 		ourShader.setMat4("view", view);
 		ourShader.setVec3("viewPos", scene.GetActiveCamera().Position);
-		ourShader.setVec3("light.position", scene.GetLights()[0]->GetPosition());
-		ourShader.setVec3("light.color", scene.GetLights()[0]->GetColor());
-		ourShader.setFloat("light.constant", 1);
-		ourShader.setFloat("light.linear", 0.09f);
-		ourShader.setFloat("light.quadratic", 0.032f);
+
+
+		ourShader.setVec3("dirLights[0].direction",0, 0, -1);
+		ourShader.setVec3("dirLights[0].ambient", 0.05f, 0.05f, 0.05f);
+		ourShader.setVec3("dirLights[0].diffuse", 0.4f, 0.4f, 0.4f);
+		ourShader.setVec3("dirLights[0].specular", 0.6f, 0.6f, 0.6f);
+		// point light 1
+		ourShader.setVec3("pointLights[0].position", light1->GetPosition());
+		ourShader.setVec3("pointLights[0].ambient", 0.0005f, 0.0005f, 0.0005f);
+		ourShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+		ourShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("pointLights[0].constant", 1.0f);
+		ourShader.setFloat("pointLights[0].linear", 0.09f);
+		ourShader.setFloat("pointLights[0].quadratic", 0.032f);
+
+		// spotLight
+		ourShader.setVec3("spotLights[0].position", scene.GetActiveCamera().Position);
+		ourShader.setVec3("spotLights[0].direction", scene.GetActiveCamera().Front);
+		ourShader.setVec3("spotLights[0].ambient", 0.0f, 0.0f, 0.0f);
+		ourShader.setVec3("spotLights[0].diffuse", 1.0f, 1.0f, 1.0f);
+		ourShader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
+		ourShader.setFloat("spotLights[0].constant", 1.0f);
+		ourShader.setFloat("spotLights[0].linear", 0.09f);
+		ourShader.setFloat("spotLights[0].quadratic", 0.032f);
+		ourShader.setFloat("spotLights[0].cutOff", glm::cos(glm::radians(12.5f)));
+		ourShader.setFloat("spotLights[0].outerCutOff", glm::cos(glm::radians(15.0f)));
 		
 
 		vector<Cube*> cubes = scene.GetCubes();
