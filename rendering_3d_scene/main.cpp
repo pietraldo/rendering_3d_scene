@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
+#include <cstdlib>
 
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
@@ -50,6 +51,7 @@ float lastFrame = 0.0f;
 Scene scene;
 int main()
 {
+	srand(19);
 	GLFWwindow* window = CreateWindow(SCR_WIDTH, SCR_HEIGHT, "Rendering 3D scene");
 	if (window == nullptr) return -1;
 
@@ -65,6 +67,19 @@ int main()
 	
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
 	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+
+	// create a few cubes
+	for (int i = 0; i < 20; i++)
+	{
+		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
+		glm::vec3 scale = glm::vec3(rand() % 20/10.0f, rand() % 20/10.0f, rand() % 20/10.0f);
+		//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 color = glm::vec3((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f);
+		glm::vec3 rotation = glm::vec3(rand() % 360, rand() % 360, rand() % 360);
+		Cube* cube = new Cube(position, scale, color, rotation);
+		scene.AddCube(cube);
+	}
+
 	Cube cube1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 0.5f, 0.5f), glm::vec3(0.0f, 40.0f, 0.0f));
 	Cube cube2(glm::vec3(2.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 1.0f, 0.5f), glm::vec3(0.0f, 40.0f, 0.0f));
 	Cube cube3(glm::vec3(-2.0f, 5.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 1.0f), glm::vec3(0.0f, 10.0f, 70.0f));
