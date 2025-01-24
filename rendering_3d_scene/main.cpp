@@ -63,10 +63,11 @@ int main()
 
 
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
+	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
 	
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
-	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f, 3.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 
 	// create a few cubes
 	for (int i = 0; i < 20; i++)
@@ -106,6 +107,14 @@ int main()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(int)));
 	glEnableVertexAttribArray(1);
 
+	unsigned int lightVAO;
+	glGenVertexArrays(1, &lightVAO);
+	glBindVertexArray(lightVAO);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = static_cast<float>(glfwGetTime());
@@ -141,6 +150,19 @@ int main()
 			glBindVertexArray(cubeVAO);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+		lightShader.use();
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, scene.GetLights()[0]->GetPosition());
+		model = glm::scale(model, glm::vec3(0.2f));
+		lightShader.setMat4("model", model);
+
+		lightShader.setMat4("projection", projection);
+		lightShader.setMat4("view", view);
+		lightShader.setVec3("lightColor", scene.GetLights()[0]->GetColor());
+
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
