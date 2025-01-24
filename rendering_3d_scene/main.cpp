@@ -143,17 +143,17 @@ int main()
 	pointLight.position = glm::vec3(3, 1, -3);
 	pointLight.ambient = glm::vec3(0.0005f, 0.0005f, 0.0005f);
 	pointLight.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-	pointLight.specular = glm::vec3(1.0f, 0.0f, 0.0f);
+	pointLight.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	pointLight.constant = 0.2f;
 	pointLight.linear = 0.09f;
 	pointLight.quadratic = 0.05;
 	lightBuffer.pointLights[0] = pointLight;
 	
 	PointLight pointLight2;
-	pointLight2.position = glm::vec3(-4, 1, -3);
+	pointLight2.position = glm::vec3(-4, -4, -3);
 	pointLight2.ambient = glm::vec3(0.0005f, 0.0005f, 0.0005f);
 	pointLight2.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
-	pointLight2.specular = glm::vec3(1.0f, 0.0f, 0.0f);
+	pointLight2.specular = glm::vec3(1.0f, 1.0f, 1.0f);
 	pointLight2.constant = 0.2f;
 	pointLight2.linear = 0.09f;
 	pointLight2.quadratic = 0.05;
@@ -256,7 +256,7 @@ int main()
 
 		lightShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, scene.GetLights()[0]->GetPosition());
+		model = glm::translate(model, pointLight.position);
 		model = glm::scale(model, glm::vec3(0.2f));
 		lightShader.setMat4("model", model);
 
