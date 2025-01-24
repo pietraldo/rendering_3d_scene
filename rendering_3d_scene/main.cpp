@@ -49,40 +49,36 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 struct DirLight {
-	glm::vec4 direction; // Use glm::vec4 to ensure padding
-	glm::vec4 ambient;
-	glm::vec4 diffuse;
-	glm::vec4 specular;
+	alignas(16)glm::vec3 direction; // Use glm::vec4 to ensure padding
+	alignas(16)glm::vec3 ambient;
+	alignas(16)glm::vec3 diffuse;
+	alignas(16)glm::vec3 specular;
 };
 
 struct PointLight {
-	glm::vec4 position; 
-	
-	glm::vec4 ambient;
-	glm::vec4 diffuse;
-	glm::vec4 specular;
+	alignas(16)glm::vec3 position;
+	alignas(16)glm::vec3 ambient;
+	alignas(16)glm::vec3 diffuse;
+	alignas(16)glm::vec3 specular;
 	float constant;
 	float linear;
 	float quadratic;
-	float padding;
+
 };
 
 struct SpotLight {
-	glm::vec4 position;  // Use glm::vec4 to ensure padding
-	glm::vec4 direction; // Use glm::vec4 to ensure padding
+	alignas(16)glm::vec3 position;  // Use glm::vec4 to ensure padding
+	alignas(16)glm::vec3 direction; // Use glm::vec4 to ensure padding
 	
-	glm::vec4 ambient;
-	glm::vec4 diffuse;
-	glm::vec4 specular;
+	alignas(16)glm::vec3 ambient;
+	alignas(16)glm::vec3 diffuse;
+	alignas(16)glm::vec3 specular;
 
 	float cutOff;
 	float outerCutOff;
 	float constant;
 	float linear;
 	float quadratic;
-	float padding1;
-	float padding2;
-	float padding3;
 };
 
 struct LightBuffer {
@@ -136,31 +132,40 @@ int main()
 
 	LightBuffer lightBuffer;
 	DirLight dirLight;
-	dirLight.direction = glm::vec4(0, 0, 0, 0);
-	dirLight.ambient = glm::vec4(0, 0, 0, 0);
-	dirLight.diffuse = glm::vec4(0, 0, 0, 0);
-	dirLight.specular = glm::vec4(1, 1, 0, 0);
+	dirLight.direction = glm::vec3(0, 1, 0);
+	dirLight.ambient = glm::vec3(0.05, 0.05, 0.05);
+	dirLight.diffuse = glm::vec3(0.4, 0.4, 0.4);
+	dirLight.specular = glm::vec3(0.6, 0.6, 0.6);
 	lightBuffer.dirLights[0] = dirLight;
 	lightBuffer.NR_DIR_LIGHTS = 1;
 
 	PointLight pointLight;
-	pointLight.position = glm::vec4(0, 0, 0, 0);
-	pointLight.ambient = glm::vec4(0.0005f, 0.0005f, 0.0005f, 0.0f);
-	pointLight.diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 0.0f);
-	pointLight.specular = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+	pointLight.position = glm::vec3(1, 1, -3);
+	pointLight.ambient = glm::vec3(0.0005f, 0.0005f, 0.0005f);
+	pointLight.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	pointLight.specular = glm::vec3(1.0f, 0.0f, 0.0f);
 	pointLight.constant = 0.2f;
 	pointLight.linear = 0.09f;
-	pointLight.padding = 1.0f;
-	pointLight.quadratic = 1;
+	pointLight.quadratic = 0.05;
 	lightBuffer.pointLights[0] = pointLight;
-	lightBuffer.NR_POINT_LIGHTS = 1;
+	
+	PointLight pointLight2;
+	pointLight2.position = glm::vec3(-4, 1, -3);
+	pointLight2.ambient = glm::vec3(0.0005f, 0.0005f, 0.0005f);
+	pointLight2.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	pointLight2.specular = glm::vec3(1.0f, 0.0f, 0.0f);
+	pointLight2.constant = 0.2f;
+	pointLight2.linear = 0.09f;
+	pointLight2.quadratic = 0.05;
+	lightBuffer.pointLights[0] = pointLight2;
+	lightBuffer.NR_POINT_LIGHTS = 2;
 
 	SpotLight spotLight;
-	spotLight.position = glm::vec4(1,1,0, 0);
-	spotLight.direction = glm::vec4(scene.GetActiveCamera().Front, 0);
-	spotLight.ambient = glm::vec4(0.123f, 0.30f, 0.99f, 0.0f);
-	spotLight.diffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
-	spotLight.specular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	spotLight.position = glm::vec3(scene.GetActiveCamera().Position);
+	spotLight.direction = glm::vec3(scene.GetActiveCamera().Front);
+	spotLight.ambient = glm::vec3(0.05f, 0.05f, 0.05f);
+	spotLight.diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+	spotLight.specular = glm::vec3(0.6f, 0.6f, 0.6f);
 	spotLight.constant = 1.0f;
 	spotLight.linear = 0.09f;
 	spotLight.quadratic = 0.032f;
@@ -170,10 +175,7 @@ int main()
 	lightBuffer.NR_SPOT_LIGHTS = 1;
 	
 
-	std::cout << "Directional Light: " << lightBuffer.spotLights[0].ambient.x << ", "
-		<< lightBuffer.spotLights[0].ambient.y << ", "
-		<< lightBuffer.spotLights[0].ambient.z << ", "
-		<< lightBuffer.spotLights[0].direction.w << std::endl;
+	
 
 	unsigned int VBO, cubeVAO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -226,7 +228,11 @@ int main()
 
 		ourShader.use();
 
-		
+		lightBuffer.spotLights[0].position = glm::vec3(scene.GetActiveCamera().Position);
+		lightBuffer.spotLights[0].direction = glm::vec3(scene.GetActiveCamera().Front);
+		glBindBuffer(GL_UNIFORM_BUFFER, uboLights);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightBuffer), &lightBuffer);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
@@ -256,6 +262,15 @@ int main()
 
 		lightShader.setMat4("projection", projection);
 		lightShader.setMat4("view", view);
+		lightShader.setVec3("lightColor", scene.GetLights()[0]->GetColor());
+
+		glBindVertexArray(lightVAO);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, pointLight2.position);
+		model = glm::scale(model, glm::vec3(0.2f));
+		lightShader.setMat4("model", model);
 		lightShader.setVec3("lightColor", scene.GetLights()[0]->GetColor());
 
 		glBindVertexArray(lightVAO);
