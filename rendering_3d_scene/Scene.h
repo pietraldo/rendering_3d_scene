@@ -23,10 +23,28 @@ public:
 	void AddLight(Light* light) { lights.push_back(light); }
 	void AddCamera(Camera* camera) { cameras.push_back(camera); }
 	void AddCube(Cube* cube) { cubes.push_back(cube); }
-	void SetActiveCamera(int index) { active_camera = cameras[index]; }
-	Camera& GetActiveCamera() { return *active_camera; }
+	void SetActiveCamera(int index)
+	{
+		for (Camera* camera: cameras) {
+			camera->SetActive(false);
+		}
+		cameras[index]->SetActive(true);
+		active_camera = cameras[index];
+	}
+	Camera& GetActiveCamera()
+	{
+		for (Camera* camera : cameras) {
+			if (camera->IsActive())
+			{
+				active_camera = camera;
+				break;
+			}
+		}
+		return *active_camera;
+	}
 	vector<Cube*> GetCubes() { return cubes; }
 	vector<Light*> GetLights() { return lights; }
+	vector<Camera*> GetCameras() { return cameras; }
 
 	LightBuffer LoadLights() {
 		LightBuffer lightBuffer;

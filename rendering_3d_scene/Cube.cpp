@@ -54,3 +54,22 @@ glm::mat4 Cube::GetModelMatrix()
 	model = glm::scale(model, scale);
 	return model;
 }
+
+void Cube::UpdatePosition(float deltaTime)
+{
+	//velocity += acceleration * deltaTime;
+	position += velocity * deltaTime;
+
+	if (position.x > 10.0f || position.x < -10.0f)
+	{
+		velocity.x = -velocity.x;
+	}
+	if (position.y > 10.0f || position.y < -10.0f)
+	{
+		velocity.y = -velocity.y;
+	}
+	if (position.z > 10.0f || position.z < -10.0f)
+	{
+		velocity.z = -velocity.z;
+	}
+}

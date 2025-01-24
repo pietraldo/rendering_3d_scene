@@ -36,6 +36,7 @@ void processInput(GLFWwindow* window);
 GLFWwindow* CreateWindow(int width, int height, const char* title);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void RenderImGui();
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -60,11 +61,7 @@ int main()
 	GLFWwindow* window = CreateWindow(SCR_WIDTH, SCR_HEIGHT, "Rendering 3D scene");
 	if (window == nullptr) return -1;
 
-	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetScrollCallback(window, scroll_callback);
-	//stbi_set_flip_vertically_on_load(true);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glEnable(GL_DEPTH_TEST);
+
 
 
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
@@ -72,6 +69,8 @@ int main()
 
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
+	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
+	Camera camera3(glm::vec3(0.0f, 0.0f, 30.0f));
 
 	// create a few cubes
 	for (int i = 0; i < 20; i++)
@@ -85,8 +84,11 @@ int main()
 		Cube* cube = new Cube(position, scale, color, rotation);
 		scene.AddCube(cube);
 	}
-	
+	scene.GetCubes()[0]->SetVelocity(glm::vec3(1.0f, 0.3f, 3.0f));
+
 	scene.AddCamera(&camera1);
+	scene.AddCamera(&camera2);
+	scene.AddCamera(&camera3);
 	scene.SetActiveCamera(0);
 
 	LightPoint light1(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
@@ -174,12 +176,18 @@ int main()
 		ourShader.setMat4("view", view);
 		ourShader.setVec3("viewPos", scene.GetActiveCamera().Position);
 
+		Cube* cube0 = scene.GetCubes()[0];
+		camera2.Front = glm::normalize(cube0->GetPosition() - camera2.Position);
+		camera3.Front = glm::normalize(cube0->GetVelocity());
+		camera3.Position = cube0->GetPosition() - camera3.Front * 10.0f;
 
-
+		
 
 		vector<Cube*> cubes = scene.GetCubes();
 		for (int i = 0; i < cubes.size(); i++)
 		{
+			cubes[i]->UpdatePosition(deltaTime);
+
 			ourShader.setMat4("model", cubes[i]->GetModelMatrix());
 
 			ourShader.setVec3("objectColor", cubes[i]->GetColor());
@@ -206,12 +214,35 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
+		RenderImGui();
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
 	glfwTerminate();
 	return 0;
+}
+
+void RenderImGui()
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
+	{
+		ImGui::Begin("Camera settings");
+		vector<Camera*> cameras = scene.GetCameras();
+		for (int i = 0; i < cameras.size(); i++)
+		{
+			ImGui::Checkbox(("Camera " + to_string(i)).c_str(), &cameras[i]->isActive);
+		}
+		ImGui::Text("Hello, world!");
+		ImGui::End();
+	}
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 GLFWwindow* CreateWindow(int width, int height, const char* title)
@@ -239,6 +270,20 @@ GLFWwindow* CreateWindow(int width, int height, const char* title)
 	glViewport(0, 0, width, height);
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	//stbi_set_flip_vertically_on_load(true);
+
+	glEnable(GL_DEPTH_TEST);
+
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+
+	// Initialize backends
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
 	return window;
 }
@@ -274,20 +319,20 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	float xpos = static_cast<float>(xposIn);
 	float ypos = static_cast<float>(yposIn);
-
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
 	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+	float yoffset = lastY - ypos;
 
 	lastX = xpos;
 	lastY = ypos;
 
+	//if right mouse button is pressed, do not move the camera
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) != GLFW_PRESS)
+	{
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		return;
+	}
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	scene.GetActiveCamera().ProcessMouseMovement(xoffset, yoffset);
 }
 
