@@ -140,7 +140,7 @@ int main()
 	lightBuffer.NR_DIR_LIGHTS = 1;
 
 	PointLight pointLight;
-	pointLight.position = glm::vec3(1, 1, -3);
+	pointLight.position = glm::vec3(3, 1, -3);
 	pointLight.ambient = glm::vec3(0.0005f, 0.0005f, 0.0005f);
 	pointLight.diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
 	pointLight.specular = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -157,7 +157,7 @@ int main()
 	pointLight2.constant = 0.2f;
 	pointLight2.linear = 0.09f;
 	pointLight2.quadratic = 0.05;
-	lightBuffer.pointLights[0] = pointLight2;
+	lightBuffer.pointLights[1] = pointLight2;
 	lightBuffer.NR_POINT_LIGHTS = 2;
 
 	SpotLight spotLight;
