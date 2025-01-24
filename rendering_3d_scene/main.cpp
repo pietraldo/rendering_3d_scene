@@ -21,6 +21,7 @@
 #include "Light.h"
 #include "LightPoint.h"
 #include "Cube.h"
+#include "Constants.h"
 
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -47,6 +48,52 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+struct DirLight {
+	glm::vec4 direction; // Use glm::vec4 to ensure padding
+	glm::vec4 ambient;
+	glm::vec4 diffuse;
+	glm::vec4 specular;
+};
+
+struct PointLight {
+	glm::vec4 position; 
+	
+	glm::vec4 ambient;
+	glm::vec4 diffuse;
+	glm::vec4 specular;
+	float constant;
+	float linear;
+	float quadratic;
+	float padding;
+};
+
+struct SpotLight {
+	glm::vec4 position;  // Use glm::vec4 to ensure padding
+	glm::vec4 direction; // Use glm::vec4 to ensure padding
+	
+	glm::vec4 ambient;
+	glm::vec4 diffuse;
+	glm::vec4 specular;
+
+	float cutOff;
+	float outerCutOff;
+	float constant;
+	float linear;
+	float quadratic;
+	float padding1;
+	float padding2;
+	float padding3;
+};
+
+struct LightBuffer {
+	DirLight dirLights[MAX_DIR_LIGHTS];
+	PointLight pointLights[MAX_POINT_LIGHTS];
+	SpotLight spotLights[MAX_SPOT_LIGHTS];
+	int NR_DIR_LIGHTS;
+	int NR_POINT_LIGHTS;
+	int NR_SPOT_LIGHTS;
+};
+
 
 Scene scene;
 int main()
@@ -65,15 +112,15 @@ int main()
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
-	
+
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
-	Light* light1 =  new LightPoint(glm::vec3(1.1f, 2.0f,-3.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
+	Light* light1 = new LightPoint(glm::vec3(1.1f, 2.0f, -3.0f), glm::vec3(1.0f, 1.0f, 0.0f), 1.0f, 0.09f, 0.032f);
 
 	// create a few cubes
 	for (int i = 0; i < 20; i++)
 	{
 		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
-		glm::vec3 scale = glm::vec3(rand() % 20/10.0f+0.2f, rand() % 20/10.0f + 0.2f, rand() % 20/10.0f + 0.2f);
+		glm::vec3 scale = glm::vec3(rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f);
 		//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 		//glm::vec3 color = glm::vec3((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f);
 		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -86,6 +133,47 @@ int main()
 	scene.AddLight(light1);
 	scene.AddCamera(&camera1);
 	scene.SetActiveCamera(0);
+
+	LightBuffer lightBuffer;
+	DirLight dirLight;
+	dirLight.direction = glm::vec4(0, 0, 0, 0);
+	dirLight.ambient = glm::vec4(0, 0, 0, 0);
+	dirLight.diffuse = glm::vec4(0, 0, 0, 0);
+	dirLight.specular = glm::vec4(1, 1, 0, 0);
+	lightBuffer.dirLights[0] = dirLight;
+	lightBuffer.NR_DIR_LIGHTS = 1;
+
+	PointLight pointLight;
+	pointLight.position = glm::vec4(0, 0, 0, 0);
+	pointLight.ambient = glm::vec4(0.0005f, 0.0005f, 0.0005f, 0.0f);
+	pointLight.diffuse = glm::vec4(0.8f, 0.8f, 0.8f, 0.0f);
+	pointLight.specular = glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+	pointLight.constant = 0.2f;
+	pointLight.linear = 0.09f;
+	pointLight.padding = 1.0f;
+	pointLight.quadratic = 1;
+	lightBuffer.pointLights[0] = pointLight;
+	lightBuffer.NR_POINT_LIGHTS = 1;
+
+	SpotLight spotLight;
+	spotLight.position = glm::vec4(1,1,0, 0);
+	spotLight.direction = glm::vec4(scene.GetActiveCamera().Front, 0);
+	spotLight.ambient = glm::vec4(0.123f, 0.30f, 0.99f, 0.0f);
+	spotLight.diffuse = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	spotLight.specular = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+	spotLight.constant = 1.0f;
+	spotLight.linear = 0.09f;
+	spotLight.quadratic = 0.032f;
+	spotLight.cutOff = glm::cos(glm::radians(12.5f));
+	spotLight.outerCutOff = glm::cos(glm::radians(15.0f));
+	lightBuffer.spotLights[0] = spotLight;
+	lightBuffer.NR_SPOT_LIGHTS = 1;
+	
+
+	std::cout << "Directional Light: " << lightBuffer.spotLights[0].ambient.x << ", "
+		<< lightBuffer.spotLights[0].ambient.y << ", "
+		<< lightBuffer.spotLights[0].ambient.z << ", "
+		<< lightBuffer.spotLights[0].direction.w << std::endl;
 
 	unsigned int VBO, cubeVAO;
 	glGenVertexArrays(1, &cubeVAO);
@@ -108,6 +196,22 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
+	unsigned int uniformBlockIndexLights = glGetUniformBlockIndex(ourShader.ID, "Lights");
+	glUniformBlockBinding(ourShader.ID, uniformBlockIndexLights, 0);
+
+	unsigned int uboLights;
+	glGenBuffers(1, &uboLights);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, uboLights);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightBuffer), NULL, GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboLights, 0, sizeof(LightBuffer));
+
+	glBindBuffer(GL_UNIFORM_BUFFER, uboLights);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightBuffer), &lightBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -122,6 +226,8 @@ int main()
 
 		ourShader.use();
 
+		
+
 		glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
 		ourShader.setMat4("projection", projection);
@@ -129,31 +235,7 @@ int main()
 		ourShader.setVec3("viewPos", scene.GetActiveCamera().Position);
 
 
-		ourShader.setVec3("dirLights[0].direction",0, 0, -1);
-		ourShader.setVec3("dirLights[0].ambient", 0.05f, 0.05f, 0.05f);
-		ourShader.setVec3("dirLights[0].diffuse", 0.4f, 0.4f, 0.4f);
-		ourShader.setVec3("dirLights[0].specular", 0.6f, 0.6f, 0.6f);
-		// point light 1
-		ourShader.setVec3("pointLights[0].position", light1->GetPosition());
-		ourShader.setVec3("pointLights[0].ambient", 0.0005f, 0.0005f, 0.0005f);
-		ourShader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-		ourShader.setVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-		ourShader.setFloat("pointLights[0].constant", 1.0f);
-		ourShader.setFloat("pointLights[0].linear", 0.09f);
-		ourShader.setFloat("pointLights[0].quadratic", 0.032f);
 
-		// spotLight
-		ourShader.setVec3("spotLights[0].position", scene.GetActiveCamera().Position);
-		ourShader.setVec3("spotLights[0].direction", scene.GetActiveCamera().Front);
-		ourShader.setVec3("spotLights[0].ambient", 0.0f, 0.0f, 0.0f);
-		ourShader.setVec3("spotLights[0].diffuse", 1.0f, 1.0f, 1.0f);
-		ourShader.setVec3("spotLights[0].specular", 1.0f, 1.0f, 1.0f);
-		ourShader.setFloat("spotLights[0].constant", 1.0f);
-		ourShader.setFloat("spotLights[0].linear", 0.09f);
-		ourShader.setFloat("spotLights[0].quadratic", 0.032f);
-		ourShader.setFloat("spotLights[0].cutOff", glm::cos(glm::radians(12.5f)));
-		ourShader.setFloat("spotLights[0].outerCutOff", glm::cos(glm::radians(15.0f)));
-		
 
 		vector<Cube*> cubes = scene.GetCubes();
 		for (int i = 0; i < cubes.size(); i++)
@@ -178,7 +260,7 @@ int main()
 
 		glBindVertexArray(lightVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
