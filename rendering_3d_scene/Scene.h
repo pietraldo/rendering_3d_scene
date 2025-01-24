@@ -27,5 +27,16 @@ public:
 	Camera& GetActiveCamera() { return *active_camera; }
 	vector<Cube*> GetCubes() { return cubes; }
 	vector<Light*> GetLights() { return lights; }
+
+	LightBuffer LoadLights() {
+		LightBuffer lightBuffer;
+		lightBuffer.NR_DIR_LIGHTS = 0;
+		lightBuffer.NR_POINT_LIGHTS = 0;
+		lightBuffer.NR_SPOT_LIGHTS = 0;
+		for (Light* light : lights) {
+			light->AddTo(lightBuffer);
+		}
+		return lightBuffer;
+	}
 };
 
