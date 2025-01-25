@@ -20,7 +20,8 @@ private:
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	vector<Cube*> cubes;
-	vector<Model*> models;
+	vector<Model*> modelsTex;
+	vector<Model*> modelsCol;
 
 	Camera* active_camera;
 
@@ -102,12 +103,38 @@ public:
 		}
 	}
 
-	void DrawModels(Shader& shader)
+	void DrawModels(Shader& shaderTex, Shader& shaderCol)
 	{
-		for (Model* model : models) {
-			model->Draw(shader);
+		for (Model* model : modelsTex)
+		{
+			DrawModel(shaderTex, *model);
+		}
+		for (Model* model : modelsCol)
+		{
+			DrawModel(shaderCol, *model);
 		}
 	}
+
+	void DrawModel(Shader& shader, Model& model)
+	{
+		shader.use();
+		shader.setMat4("projection", GetProjectionMatrix());
+		shader.setMat4("view", GetViewMatrix());
+		shader.setVec3("viewPos", active_camera->Position);
+		shader.setVec3("objectColor", model.color);
+
+		glm::mat4 modelMatrix = glm::mat4(1.0f);
+		modelMatrix = glm::translate(modelMatrix, model.position);
+		modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1) * model.scale);
+		shader.setMat4("model", modelMatrix);
+
+		model.Draw(shader);
+	}
+
+	
+	void AddTextureModel(Model* model) { modelsTex.push_back(model); }
+	void AddColorModel(Model* model) { modelsCol.push_back(model); }
+
 
 	void DrawLights(Shader& shader, unsigned int& lightVAO)
 	{
