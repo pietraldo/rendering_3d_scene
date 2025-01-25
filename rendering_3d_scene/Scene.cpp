@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+
+
 void Scene::SetActiveCamera(int index)
 {
 	for (Camera* camera : cameras) {
@@ -62,6 +64,27 @@ void Scene::DrawCubes(Shader& shader, unsigned int& cubeVAO)
 	}
 }
 
+void Scene::DrawSpheres(Shader& shader, unsigned int& sphereVAO)
+{
+	shader.use();
+
+	shader.setMat4("projection", GetProjectionMatrix());
+	shader.setMat4("view", GetViewMatrix());
+	shader.setVec3("viewPos", active_camera->Position);
+
+	for (Sphere* sphere : spheres)
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, sphere->position);
+		model = glm::scale(model, glm::vec3(sphere->radius));
+		shader.setMat4("model", model);
+		shader.setVec3("objectColor", sphere->color);
+
+		glBindVertexArray(sphereVAO);
+		glDrawElements(GL_TRIANGLES, (Sphere::stackCount-1)*Sphere::sectorCount*6, GL_UNSIGNED_INT, 0);
+	}
+}
+
 void Scene::DrawModels(Shader& shaderTex, Shader& shaderCol)
 {
 	for (Model* model : modelsTex)
@@ -102,6 +125,7 @@ void Scene::CreateObjects()
 	CreateLights();
 	CreateModels();
 	CreateCubes();
+	CreateSpheres();
 }
 void Scene::CreateModels()
 {
@@ -173,6 +197,19 @@ void Scene::CreateCubes()
 		AddCube(cube);
 	}
 	cubes[0]->SetVelocity(glm::vec3(1.0f, 0.3f, 3.0f));
+}
+
+void Scene::CreateSpheres()
+{
+	// create a few spheres
+	for (int i = 0; i < 2; i++)
+	{
+		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
+		float radius = rand() % 4;
+		glm::vec3 color = glm::vec3((rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f);
+		Sphere* sphere = new Sphere(position, radius, color);
+		AddSphere(sphere);
+	}
 }
 
 

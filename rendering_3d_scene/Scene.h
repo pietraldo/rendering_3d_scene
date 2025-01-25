@@ -10,6 +10,7 @@
 #include "LightSpot.h"
 #include "Cube.h"
 #include "Model.h"
+#include "Sphere.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,6 +24,7 @@ private:
 	vector<Light*> lights;
 	vector<Camera*> cameras;
 	vector<Cube*> cubes;
+	vector<Sphere*> spheres;
 	vector<Model*> modelsTex;
 	vector<Model*> modelsCol;
 
@@ -32,6 +34,7 @@ private:
 	void CreateLights();
 	void CreateCameras();
 	void CreateCubes();
+	void CreateSpheres();
 
 public:
 	bool dayNight = true;
@@ -40,6 +43,7 @@ public:
 	void AddLight(Light* light) { lights.push_back(light); }
 	void AddCamera(Camera* camera) { cameras.push_back(camera); }
 	void AddCube(Cube* cube) { cubes.push_back(cube); }
+	void AddSphere(Sphere* sphere) { spheres.push_back(sphere); }
 	void SetActiveCamera(int index);
 	Camera& Scene::GetActiveCamera();
 	void Update(float deltaTime);
@@ -56,6 +60,8 @@ public:
 
 	void DrawCubes(Shader& shader, unsigned int& cubeVAO);
 
+	void DrawSpheres(Shader& shader, unsigned int& sphereVAO);
+
 	void DrawModels(Shader& shaderTex, Shader& shaderCol);
 
 	void DrawModel(Shader& shader, Model& model);
@@ -70,6 +76,7 @@ public:
 	void DrawLights(Shader& shader, unsigned int& lightVAO);
 
 	vector<Cube*> GetCubes() { return cubes; }
+	vector<Sphere*> GetSpheres() { return spheres; }
 	vector<Light*> GetLights() { return lights; }
 	vector<Camera*> GetCameras() { return cameras; }
 
