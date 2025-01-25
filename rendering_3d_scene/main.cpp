@@ -65,12 +65,12 @@ int main()
 
 
 	
-	Shader spiderShader("C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/vertex_spider.txt", "C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/fragment_spider.txt");
+	Shader spiderShader("vertex_shader.txt", "fragment_shader.txt");
 
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
-	Model ourModel("C:/Users/pietr/Downloads/spider/spider.obj");
+	Model ourModel("C:/Users/pietr/Downloads/City1_Block_1/City1 Block 1.obj");
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
 	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
@@ -82,8 +82,8 @@ int main()
 		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
 		glm::vec3 scale = glm::vec3(rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f);
 		//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		//glm::vec3 color = glm::vec3((rand() % 100) / 100.0f, (rand() % 100) / 100.0f, (rand() % 100) / 100.0f);
-		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 color = glm::vec3((rand() % 50+50) / 100.0f, (rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f);
+		//glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 		glm::vec3 rotation = glm::vec3(rand() % 360, rand() % 360, rand() % 360);
 		Cube* cube = new Cube(position, scale, color, rotation);
 		scene.AddCube(cube);
@@ -227,10 +227,13 @@ int main()
 			spiderShader.setMat4("projection", projection);
 			spiderShader.setMat4("view", view);
 
+			spiderShader.setVec3("objectColor", glm::vec3(1,1,1));
+
 			// render the loaded model
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f)); // translate it down so it's at the center of the scene
-			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
 			spiderShader.setMat4("model", model);
 			ourModel.Draw(spiderShader);
 		}
