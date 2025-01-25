@@ -69,11 +69,11 @@ int main()
 	
 	Shader spiderShader("vertex_spider.txt", "fragment_spider.txt");
 
-	Shader gouraudShader("vertex_shader.txt", "fragment_shader.txt");
+	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 	Shader simpleShader("vertex_simple.txt", "fragment_simple.txt");
 
-	Shader ourShader("C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/vertex_gouraud.txt", "C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/fragment_gouard.txt");
+	Shader gouraudShader("C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/vertex_gouraud.txt", "C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/fragment_gouard.txt");
 
 	
 
@@ -158,6 +158,9 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// setting proper shader
+		Shader& shaderColor = scene.Gouraud ? gouraudShader : ourShader;
+
 		// updating light buffer
 		lightBuffer = scene.LoadLights();
 		lightBuffer.spotLights[0].position = glm::vec3(scene.GetActiveCamera().Position);
@@ -178,12 +181,12 @@ int main()
 
 		
 
-		scene.DrawCubes(ourShader, cubeVAO);
+		scene.DrawCubes(shaderColor, cubeVAO);
 		scene.DrawLights(lightShader, lightVAO);
 
-		scene.DrawModels(spiderShader, ourShader);
+		scene.DrawModels(spiderShader, shaderColor);
 		
-		scene.DrawSpheres(ourShader, VAO_sphere);
+		scene.DrawSpheres(shaderColor, VAO_sphere);
 
 		RenderImGui();
 
@@ -215,6 +218,7 @@ void RenderImGui()
 	{
 		ImGui::Begin("Light settings");
 		ImGui::Checkbox("Day/Night", &scene.dayNight);
+		ImGui::Checkbox("Gouraud", &scene.Gouraud);
 		ImGui::End();
 	}
 

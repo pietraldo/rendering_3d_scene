@@ -38,6 +38,7 @@ private:
 
 public:
 	bool dayNight = true;
+	bool Gouraud = false;
 
 	Scene() { lights = vector<Light*>(); cameras = vector<Camera*>(); cubes = vector<Cube*>(); };
 	void AddLight(Light* light) { lights.push_back(light); }

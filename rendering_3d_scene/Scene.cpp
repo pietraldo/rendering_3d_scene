@@ -131,14 +131,14 @@ void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
 	/*Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
-	AddTextureModel(spider);
+	AddTextureModel(spider);*/
 
 
 	Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	AddColorModel(car);
 	
 	Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	AddColorModel(alien);*/
+	AddColorModel(alien);
 
 	//Model* tank = new Model("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
 		//glm::vec3(0, 0, 0), 0.01, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
