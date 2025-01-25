@@ -69,9 +69,11 @@ int main()
 	
 	Shader spiderShader("vertex_spider.txt", "fragment_spider.txt");
 
-	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
+	Shader gouraudShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 	Shader simpleShader("vertex_simple.txt", "fragment_simple.txt");
+
+	Shader ourShader("C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/vertex_gouraud.txt", "C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/fragment_gouard.txt");
 
 	
 
