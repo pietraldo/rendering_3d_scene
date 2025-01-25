@@ -137,13 +137,15 @@ int main()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		
+		scene.Update(deltaTime);
+
 		// setting cameras
 		Cube* cube0 = scene.GetCubes()[0];
 		scene.GetCameras()[1]->Front = glm::normalize(cube0->GetPosition() - scene.GetCameras()[1]->Position);
 		scene.GetCameras()[2]->Front = glm::normalize(cube0->GetVelocity());
 		scene.GetCameras()[2]->Position = cube0->GetPosition() - scene.GetCameras()[2]->Front * 10.0f;
 
-		scene.Update(deltaTime);
+		
 
 		scene.DrawCubes(ourShader, cubeVAO);
 		scene.DrawLights(lightShader, lightVAO);
