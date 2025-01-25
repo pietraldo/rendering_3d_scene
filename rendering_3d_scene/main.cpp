@@ -38,9 +38,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void RenderImGui();
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+
 
 // camera moving
 float lastX = SCR_WIDTH / 2.0f;
@@ -73,7 +71,7 @@ int main()
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
 	Model spider("C:/Users/pietr/Downloads/spider/spider.obj");
 	
-	Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj");
+	//Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj");
 
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -103,6 +101,11 @@ int main()
 		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
 	scene.AddLight(&light1);
+
+	LightPoint light5(glm::vec3(10.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
+	scene.AddLight(&light5);
 
 	LightDirectional light2(glm::vec3(-0.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
 		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
@@ -170,8 +173,8 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		ourShader.use();
 
+		// updating light buffer
 		lightBuffer = scene.LoadLights();
 		lightBuffer.spotLights[0].position = glm::vec3(scene.GetActiveCamera().Position);
 		lightBuffer.spotLights[0].direction = glm::vec3(scene.GetActiveCamera().Front);
@@ -180,12 +183,8 @@ int main()
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightBuffer), &lightBuffer);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
-		ourShader.setMat4("projection", projection);
-		ourShader.setMat4("view", view);
-		ourShader.setVec3("viewPos", scene.GetActiveCamera().Position);
-
+		
+		// setting cameras
 		Cube* cube0 = scene.GetCubes()[0];
 		camera2.Front = glm::normalize(cube0->GetPosition() - camera2.Position);
 		camera3.Front = glm::normalize(cube0->GetVelocity());
@@ -193,36 +192,8 @@ int main()
 
 		scene.Update(deltaTime);
 
-		vector<Cube*> cubes = scene.GetCubes();
-		for (int i = 0; i < cubes.size(); i++)
-		{
-			ourShader.setMat4("model", cubes[i]->GetModelMatrix());
-
-			ourShader.setVec3("objectColor", cubes[i]->GetColor());
-
-			glBindVertexArray(cubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
-
-		lightShader.use();
-
-		vector<Light*> lights = scene.GetLights();
-		for (int i = 0; i < lights.size(); i++)
-		{
-			if (lights[i]->GetType() != LightType::POINT)
-				continue;
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, lights[i]->GetPosition());
-			model = glm::scale(model, glm::vec3(0.2f));
-			lightShader.setMat4("model", model);
-
-			lightShader.setMat4("projection", projection);
-			lightShader.setMat4("view", view);
-			lightShader.setVec3("lightColor", lights[i]->GetColor());
-
-			glBindVertexArray(lightVAO);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
-		}
+		scene.DrawCubes(ourShader, cubeVAO);
+		scene.DrawLights(lightShader, lightVAO);
 
 		spiderShader.use();
 		{
@@ -240,22 +211,22 @@ int main()
 			spiderShader.setMat4("model", model);
 			spider.Draw(spiderShader);
 		}
-		ourShader.use();
-		{
-			glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-			glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
-			ourShader.setMat4("projection", projection);
-			ourShader.setMat4("view", view);
+		//ourShader.use();
+		//{
+		//	glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		//	glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
+		//	ourShader.setMat4("projection", projection);
+		//	ourShader.setMat4("view", view);
 
-			ourShader.setVec3("objectColor", glm::vec3(1, 0, 1));
+		//	ourShader.setVec3("objectColor", glm::vec3(1, 0, 1));
 
-			// render the loaded model
-			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
-			ourShader.setMat4("model", model);
-			car.Draw(ourShader);
-		}
+		//	// render the loaded model
+		//	glm::mat4 model = glm::mat4(1.0f);
+		//	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+		//	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+		//	ourShader.setMat4("model", model);
+		//	car.Draw(ourShader);
+		//}
 		
 
 		RenderImGui();
