@@ -35,9 +35,11 @@ public:
 	float scale = 1.0f;
 	glm::vec3 position = glm::vec3(0.0f);
 	glm::vec3 color = glm::vec3(1.0f);
+	glm::vec3 rotation = glm::vec3(0.0f);
 
     // constructor, expects a filepath to a 3D model.
-	Model(string const& path, glm::vec3 position, float scale, glm::vec3 color, bool gamma = false) : gammaCorrection(gamma), position(position), scale(scale), color(color)
+    Model(string const& path, glm::vec3 position, float scale, glm::vec3 color, glm::vec3 rotation = glm::vec3(0.0f), bool gamma = false) 
+		: gammaCorrection(gamma), position(position), scale(scale), color(color), rotation(rotation)
     {
         loadModel(path);
     }

@@ -125,6 +125,9 @@ public:
 
 		glm::mat4 modelMatrix = glm::mat4(1.0f);
 		modelMatrix = glm::translate(modelMatrix, model.position);
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(model.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(model.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMatrix = glm::rotate(modelMatrix, glm::radians(model.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		modelMatrix = glm::scale(modelMatrix, glm::vec3(1, 1, 1) * model.scale);
 		shader.setMat4("model", modelMatrix);
 

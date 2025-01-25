@@ -69,12 +69,16 @@ int main()
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	Model spider("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0,0,0), 0.1, glm::vec3(1,1,1));
+	Model spider("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0,0,0), 0.05, glm::vec3(1,1,1));
 	scene.AddColorModel(&spider);
 
 	
-	Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.6, glm::vec3(1, 1, 0));
+	Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	scene.AddColorModel(&car);
+	
+	Model tank("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj", 
+		glm::vec3(0, 0, 0), 0.1, glm::vec3(0.4, 1, 0.4), glm::vec3(-90,0,0));
+	scene.AddColorModel(&tank);
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
 	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
