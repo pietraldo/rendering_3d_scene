@@ -19,6 +19,8 @@ private:
 	Camera* active_camera;
 
 public:
+	bool dayNight = true;
+
 	Scene() { lights = vector<Light*>(); cameras = vector<Camera*>(); cubes = vector<Cube*>(); };
 	void AddLight(Light* light) { lights.push_back(light); }
 	void AddCamera(Camera* camera) { cameras.push_back(camera); }
@@ -42,6 +44,30 @@ public:
 		}
 		return *active_camera;
 	}
+
+	void Update(float deltaTime)
+	{
+		for (Cube* cube : cubes) {
+			cube->UpdatePosition(deltaTime);
+		}
+		for (Light* light : lights) {
+			if (light->GetType() != LightType::DIRECTIONAL)
+				continue;
+			if (dayNight)
+			{
+				light->ambient = glm::vec3(0.0f);
+				light->diffuse = glm::vec3(0.0f);
+				light->specular = glm::vec3(0.0f);
+			}
+			else
+			{
+				light->ambient = glm::vec3(0.05f);
+				light->diffuse = glm::vec3(0.4f, 0.4f, 0.4f);
+				light->specular = glm::vec3(0.6f, 0.6f, 0.6f);
+			}
+		}
+	}
+
 	vector<Cube*> GetCubes() { return cubes; }
 	vector<Light*> GetLights() { return lights; }
 	vector<Camera*> GetCameras() { return cameras; }

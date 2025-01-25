@@ -20,5 +20,6 @@ public:
         :Light(position, color, ambient, diffuse, specular), constant(constant), linear(linear), quadratic(quadratic) {};
 
 	void AddTo(LightBuffer& lightBuffer) override;
+    LightType GetType() override { return LightType::POINT; };
 };
 

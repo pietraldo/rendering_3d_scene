@@ -12,5 +12,7 @@ public:
 		:Light(position, color, ambient, diffuse, specular), direction(direction) {};
 
 	void AddTo(LightBuffer& lightBuffer) override;
+
+	LightType GetType() override { return LightType::DIRECTIONAL; };
 };
 

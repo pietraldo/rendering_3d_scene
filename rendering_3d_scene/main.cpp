@@ -168,8 +168,10 @@ int main()
 
 		ourShader.use();
 
+		lightBuffer = scene.LoadLights();
 		lightBuffer.spotLights[0].position = glm::vec3(scene.GetActiveCamera().Position);
 		lightBuffer.spotLights[0].direction = glm::vec3(scene.GetActiveCamera().Front);
+
 		glBindBuffer(GL_UNIFORM_BUFFER, uboLights);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(LightBuffer), &lightBuffer);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -185,13 +187,11 @@ int main()
 		camera3.Front = glm::normalize(cube0->GetVelocity());
 		camera3.Position = cube0->GetPosition() - camera3.Front * 10.0f;
 
-		
+		scene.Update(deltaTime);
 
 		vector<Cube*> cubes = scene.GetCubes();
 		for (int i = 0; i < cubes.size(); i++)
 		{
-			cubes[i]->UpdatePosition(deltaTime);
-
 			ourShader.setMat4("model", cubes[i]->GetModelMatrix());
 
 			ourShader.setVec3("objectColor", cubes[i]->GetColor());
@@ -205,6 +205,8 @@ int main()
 		vector<Light*> lights = scene.GetLights();
 		for (int i = 0; i < lights.size(); i++)
 		{
+			if (lights[i]->GetType() != LightType::POINT)
+				continue;
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, lights[i]->GetPosition());
 			model = glm::scale(model, glm::vec3(0.2f));
@@ -227,7 +229,7 @@ int main()
 
 			// render the loaded model
 			glm::mat4 model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f)); // translate it down so it's at the center of the scene
 			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
 			spiderShader.setMat4("model", model);
 			ourModel.Draw(spiderShader);
@@ -258,6 +260,12 @@ void RenderImGui()
 			ImGui::Checkbox(("Camera " + to_string(i)).c_str(), &cameras[i]->isActive);
 		}
 		ImGui::Text("Hello, world!");
+		ImGui::End();
+	}
+
+	{
+		ImGui::Begin("Light settings");
+		ImGui::Checkbox("Day/Night", &scene.dayNight);
 		ImGui::End();
 	}
 

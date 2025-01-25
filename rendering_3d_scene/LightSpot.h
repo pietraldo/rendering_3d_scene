@@ -21,5 +21,6 @@ public:
 		quadratic(quadratic), cutOff(cutOff), outerCutOff(outerCutOff), direction(direction) {};
 
 	void AddTo(LightBuffer& lightBuffer) override;
+	LightType GetType() override { return LightType::SPOT; };
 };
 

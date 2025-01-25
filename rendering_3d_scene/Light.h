@@ -50,16 +50,25 @@ struct LightBuffer {
 	int NR_SPOT_LIGHTS;
 };
 
+enum LightType {
+	DIRECTIONAL,
+	POINT,
+	SPOT,
+	UNKNOWN
+};
+
 class Light
 {
 protected:
+	
+public:
 	glm::vec3 position;
 	glm::vec3 color;
 
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
-public:
+
 	Light(glm::vec3 position, glm::vec3 color, glm::vec3 ambient, 
 		glm::vec3 diffuse, glm::vec3 specular)
 		:position(position), color(color),ambient(ambient), 
@@ -68,5 +77,6 @@ public:
 	glm::vec3 GetColor() { return color; }
 
 	virtual void AddTo(LightBuffer& lightBuffer) {};
+	virtual LightType GetType() { return LightType::UNKNOWN; };
 };
 
