@@ -68,65 +68,12 @@ int main()
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
-	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	Model spider("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0,0,0), 0.05, glm::vec3(1,1,1));
-	scene.AddColorModel(&spider);
-
 	
-	Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	scene.AddColorModel(&car);
-	
-	Model tank("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj", 
-		glm::vec3(0, 0, 0), 0.1, glm::vec3(0.4, 1, 0.4), glm::vec3(-90,0,0));
-	scene.AddColorModel(&tank);
 
-	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
-	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
-	Camera camera3(glm::vec3(0.0f, 0.0f, 30.0f));
-
-	// create a few cubes
-	for (int i = 0; i < 20; i++)
-	{
-		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
-		glm::vec3 scale = glm::vec3(rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f);
-		//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 color = glm::vec3((rand() % 50+50) / 100.0f, (rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f);
-		//glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 rotation = glm::vec3(rand() % 360, rand() % 360, rand() % 360);
-		Cube* cube = new Cube(position, scale, color, rotation);
-		scene.AddCube(cube);
-	}
-	scene.GetCubes()[0]->SetVelocity(glm::vec3(1.0f, 0.3f, 3.0f));
-
-	scene.AddCamera(&camera1);
-	scene.AddCamera(&camera2);
-	scene.AddCamera(&camera3);
+	scene.CreateObjects();
 	scene.SetActiveCamera(0);
 
-	LightPoint light1(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
-	scene.AddLight(&light1);
-
-	LightPoint light5(glm::vec3(10.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
-		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
-		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
-	scene.AddLight(&light5);
-
-	LightDirectional light2(glm::vec3(-0.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
-		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
-		glm::vec3(1.0f, 1.0f, 1.0f));
-	scene.AddLight(&light2);
-	LightDirectional light4(glm::vec3(-4.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1, -1, 0),
-		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
-		glm::vec3(1.0f, 1.0f, 1.0f));
-	scene.AddLight(&light4);
-
-	LightSpot light3(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
-		, glm::vec3(0, 0, -1),
-		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
-		glm::vec3(1.0f, 1.0f, 1.0f));
-	scene.AddLight(&light3);
+	
 
 	LightBuffer lightBuffer = scene.LoadLights();
 
@@ -192,9 +139,9 @@ int main()
 		
 		// setting cameras
 		Cube* cube0 = scene.GetCubes()[0];
-		camera2.Front = glm::normalize(cube0->GetPosition() - camera2.Position);
-		camera3.Front = glm::normalize(cube0->GetVelocity());
-		camera3.Position = cube0->GetPosition() - camera3.Front * 10.0f;
+		scene.GetCameras()[1]->Front = glm::normalize(cube0->GetPosition() - scene.GetCameras()[1]->Position);
+		scene.GetCameras()[2]->Front = glm::normalize(cube0->GetVelocity());
+		scene.GetCameras()[2]->Position = cube0->GetPosition() - scene.GetCameras()[2]->Front * 10.0f;
 
 		scene.Update(deltaTime);
 

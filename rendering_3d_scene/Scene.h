@@ -5,6 +5,9 @@
 
 #include "Camera.h"
 #include "Light.h"
+#include "LightPoint.h"
+#include "LightDirectional.h"
+#include "LightSpot.h"
 #include "Cube.h"
 #include "Model.h"
 
@@ -137,6 +140,85 @@ public:
 	
 	void AddTextureModel(Model* model) { modelsTex.push_back(model); }
 	void AddColorModel(Model* model) { modelsCol.push_back(model); }
+
+	void CreateObjects()
+	{
+		CreateCameras();
+		CreateLights();
+		CreateModels();
+		CreateCubes();
+	}
+	void CreateModels()
+	{
+		//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
+		Model* spider= new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
+		AddTextureModel(spider);
+
+
+		Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
+		AddColorModel(car);
+
+		//Model tank("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
+			//glm::vec3(0, 0, 0), 0.1, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
+		//AddColorModel(&tank);
+	}
+	void CreateLights()
+	{
+		Light* light1 = new LightPoint(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+			1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
+		AddLight(light1);
+
+		Light* light2 = new LightPoint(glm::vec3(10.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+			1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
+			glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
+		AddLight(light2);
+
+		Light* light3 = new LightDirectional(glm::vec3(-0.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
+			glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
+			glm::vec3(1.0f, 1.0f, 1.0f));
+		AddLight(light3);
+
+		Light* light4 = new LightDirectional(glm::vec3(-4.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1, -1, 0),
+			glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
+			glm::vec3(1.0f, 1.0f, 1.0f));
+		AddLight(light4);
+
+		Light* light5 = new LightSpot(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
+			, glm::vec3(0, 0, -1),
+			glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
+			glm::vec3(1.0f, 1.0f, 1.0f));
+		AddLight(light5);
+	}
+	void CreateCameras()
+	{
+		Camera* camera1= new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+		Camera* camera2 = new Camera(glm::vec3(0.0f, 0.0f, 30.0f));
+		Camera* camera3= new Camera(glm::vec3(0.0f, 0.0f, 30.0f));
+
+
+
+		AddCamera(camera1);
+		AddCamera(camera2);
+		AddCamera(camera3);
+		
+	}
+	void CreateCubes()
+	{
+		// create a few cubes
+		for (int i = 0; i < 20; i++)
+		{
+			glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
+			glm::vec3 scale = glm::vec3(rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f);
+			//glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+			glm::vec3 color = glm::vec3((rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f);
+			//glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
+			glm::vec3 rotation = glm::vec3(rand() % 360, rand() % 360, rand() % 360);
+			Cube* cube = new Cube(position, scale, color, rotation);
+			AddCube(cube);
+		}
+		cubes[0]->SetVelocity(glm::vec3(1.0f, 0.3f, 3.0f));
+	}
 
 
 	void DrawLights(Shader& shader, unsigned int& lightVAO)
