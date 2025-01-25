@@ -67,13 +67,59 @@ int main()
 
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
+	Shader simpleShader("vertex_simple.txt", "fragment_simple.txt");
 
 	
 
 	scene.CreateObjects();
 	scene.SetActiveCamera(0);
 
+	float vertices[] = {
+	 20,  20, 0.0f,  // top right
+	 20, -20, 0.0f,  // bottom right
+	-20, -20, 0.0f,  // bottom left
+	-20,  20, 0.0f   // top left 
+	};
+	unsigned int indices[] = {  // note that we start from 0!
+		0, 1, 3,   // first triangle
+		1, 2, 3    // second triangle
+	};
+
+	vector<float> vert = { 20,  20, 0.0f,  // top right
+		 20, -20, 0.0f,  // bottom right
+		-20, -20, 0.0f,  // bottom left
+		-20,  20, 0.0f   // top left
+	};
+
+	vector<int> ind;
+	ind.push_back(0);
+	ind.push_back(1);
+	ind.push_back(3);
+	ind.push_back(1);
+	ind.push_back(2);
+	ind.push_back(3);
+
 	
+
+	unsigned int VBO2, VAO2, EBO2;
+	glGenVertexArrays(1, &VAO2);
+	glGenBuffers(1, &VBO2);
+	glGenBuffers(1, &EBO2);
+
+	glBindVertexArray(VAO2);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+	glBufferData(GL_ARRAY_BUFFER, vert.size()*sizeof(float), vert.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int)*ind.size(), ind.data(), GL_STATIC_DRAW);
+
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 
 	LightBuffer lightBuffer = scene.LoadLights();
 
@@ -126,7 +172,6 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
 		// updating light buffer
 		lightBuffer = scene.LoadLights();
 		lightBuffer.spotLights[0].position = glm::vec3(scene.GetActiveCamera().Position);
@@ -152,6 +197,13 @@ int main()
 
 		scene.DrawModels(spiderShader, ourShader);
 		
+
+		simpleShader.use();
+		simpleShader.setMat4("projection", scene.GetProjectionMatrix());
+		simpleShader.setMat4("view", scene.GetViewMatrix());
+		simpleShader.setMat4("model", glm::mat4(1.0f));
+		glBindVertexArray(VAO2);
+		glDrawElements(GL_TRIANGLES, ind.size(), GL_UNSIGNED_INT, 0);
 
 		RenderImGui();
 

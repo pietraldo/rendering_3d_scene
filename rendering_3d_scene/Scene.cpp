@@ -106,7 +106,7 @@ void Scene::CreateObjects()
 void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
+	/*Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
 	AddTextureModel(spider);
 
 
@@ -114,7 +114,7 @@ void Scene::CreateModels()
 	AddColorModel(car);
 	
 	Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	AddColorModel(alien);
+	AddColorModel(alien);*/
 
 	//Model* tank = new Model("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
 		//glm::vec3(0, 0, 0), 0.01, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
@@ -161,7 +161,7 @@ void Scene::CreateCameras()
 void Scene::CreateCubes()
 {
 	// create a few cubes
-	for (int i = 0; i < 20; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
 		glm::vec3 scale = glm::vec3(rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f, rand() % 20 / 10.0f + 0.2f);
