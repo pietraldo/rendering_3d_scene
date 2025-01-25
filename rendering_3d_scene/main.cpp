@@ -64,9 +64,13 @@ int main()
 
 
 
+	
+	Shader spiderShader("C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/vertex_spider.txt", "C:/Users/pietr/Documents/studia/grafika komputerowa/rendering_3d_scene/rendering_3d_scene/fragment_spider.txt");
+
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
+	Model ourModel("C:/Users/pietr/Downloads/spider/spider.obj");
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
 	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
@@ -213,6 +217,22 @@ int main()
 			glBindVertexArray(lightVAO);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+		spiderShader.use();
+		{
+			glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+			glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
+			spiderShader.setMat4("projection", projection);
+			spiderShader.setMat4("view", view);
+
+			// render the loaded model
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+			spiderShader.setMat4("model", model);
+			ourModel.Draw(spiderShader);
+		}
+		
 
 		RenderImGui();
 
