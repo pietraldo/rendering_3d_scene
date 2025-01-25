@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "Light.h"
 #include "Cube.h"
+#include "Model.h"
 
 using namespace std;
 

@@ -65,12 +65,16 @@ int main()
 
 
 	
-	Shader spiderShader("vertex_shader.txt", "fragment_shader.txt");
+	Shader spiderShader("vertex_spider.txt", "fragment_spider.txt");
 
 	Shader ourShader("vertex_shader.txt", "fragment_shader.txt");
 	Shader lightShader("vertex_shader2.txt", "fragment_shader2.txt");
 
-	Model ourModel("C:/Users/pietr/Downloads/City1_Block_1/City1 Block 1.obj");
+	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
+	Model spider("C:/Users/pietr/Downloads/spider/spider.obj");
+	
+	Model car("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj");
+
 
 	Camera camera1(glm::vec3(0.0f, 0.0f, 3.0f));
 	Camera camera2(glm::vec3(0.0f, 0.0f, 30.0f));
@@ -104,7 +108,7 @@ int main()
 		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 	scene.AddLight(&light2);
-	LightDirectional light4(glm::vec3(-4.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
+	LightDirectional light4(glm::vec3(-4.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1, -1, 0),
 		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 	scene.AddLight(&light4);
@@ -232,10 +236,25 @@ int main()
 			// render the loaded model
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-			model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+			model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
 			spiderShader.setMat4("model", model);
-			ourModel.Draw(spiderShader);
+			spider.Draw(spiderShader);
+		}
+		ourShader.use();
+		{
+			glm::mat4 projection = glm::perspective(glm::radians(scene.GetActiveCamera().Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+			glm::mat4 view = scene.GetActiveCamera().GetViewMatrix();
+			ourShader.setMat4("projection", projection);
+			ourShader.setMat4("view", view);
+
+			ourShader.setVec3("objectColor", glm::vec3(1, 0, 1));
+
+			// render the loaded model
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+			model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
+			ourShader.setMat4("model", model);
+			car.Draw(ourShader);
 		}
 		
 
