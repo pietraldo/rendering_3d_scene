@@ -50,7 +50,7 @@ public:
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
 
-	bool alignLightWithJet = false;
+	bool alignLightWithJet = true;
 	bool rotateCubes = false;
 	bool moveCubes = false;
 
