@@ -50,6 +50,51 @@ public:
         for (unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
+    struct Point {
+        float x, y;
+    };
+	float totalTime = 0.0f;
+	glm::vec3 lastPosition = glm::vec3(0);
+    glm::vec3 lastlastPosition = glm::vec3(0);
+	glm::vec3 velocity = glm::vec3(0);
+	bool move = false;
+	glm::vec3 axisOfSymetry = glm::vec3(0, 0, 1);
+    void Update(float deltaTime)
+    {
+        if (!move) return;
+
+        float radius = 10;
+        totalTime += deltaTime*2;
+        position.x = sin(totalTime) * radius * cos(totalTime / 2) + 5 * sin(totalTime / 3);
+        position.z = cos(totalTime / 2) * 10;
+        position.y = 0;
+
+		Point p1 = { lastlastPosition.x, lastlastPosition.z };
+		Point p2 = { lastPosition.x, lastPosition.z };
+		Point p = { position.x, position.z };
+		float side = sideOfLine(p1, p2, p);
+
+        if (side > 0)
+            rotation.z = 45;
+		else
+			rotation.z = -45;
+
+        velocity = position - lastPosition;
+		lastlastPosition = lastPosition;
+        lastPosition = position;
+    }
+    float sideOfLine(Point p1, Point p2, Point p) {
+        // Direction vector of the line
+        float dx = p2.x - p1.x;
+        float dy = p2.y - p1.y;
+
+        // Vector from p1 to p
+        float vx = p.x - p1.x;
+        float vy = p.y - p1.y;
+
+        // Cross product
+        return dx * vy - dy * vx;
+    }
 
 private:
     // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.

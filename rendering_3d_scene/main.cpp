@@ -180,10 +180,9 @@ int main()
 		
 
 		// setting cameras
-		Cube* cube0 = scene.GetCubes()[0];
-		scene.GetCameras()[1]->Front = glm::normalize(cube0->GetPosition() - scene.GetCameras()[1]->Position);
-		scene.GetCameras()[2]->Front = glm::normalize(cube0->GetVelocity());
-		scene.GetCameras()[2]->Position = cube0->GetPosition() - scene.GetCameras()[2]->Front * 10.0f;
+		scene.GetCameras()[1]->Front = glm::normalize(scene.jet->position - scene.GetCameras()[1]->Position);
+		scene.GetCameras()[2]->Front = glm::normalize(scene.jet->velocity);
+		scene.GetCameras()[2]->Position = scene.jet->position - scene.GetCameras()[2]->Front * 10.0f;
 
 		
 
@@ -193,6 +192,7 @@ int main()
 		scene.DrawModels(spiderShader, shaderColor);
 		
 		scene.DrawSpheres(shaderColor, VAO_sphere);
+		scene.DrawSpotLights(shaderColor);
 
 		RenderImGui();
 
@@ -217,7 +217,6 @@ void RenderImGui()
 		{
 			ImGui::Checkbox(("Camera " + to_string(i)).c_str(), &cameras[i]->isActive);
 		}
-		ImGui::Text("Hello, world!");
 		ImGui::End();
 	}
 
@@ -235,6 +234,11 @@ void RenderImGui()
 		ImGui::SliderFloat("Quadratic", &scene.flashlight->quadratic,0,0.1);
 		ImGui::SliderFloat("CutOff", &scene.flashlight->cutOff, 0.9, 1);
 		ImGui::SliderFloat("OuterCutOff", &scene.flashlight->outerCutOff, 0.9, 1);
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("Control reflector");
+		ImGui::SliderFloat("RotationX", &scene.rotationX, -90, 90);
 		ImGui::End();
 	}
 

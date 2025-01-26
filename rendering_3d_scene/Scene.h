@@ -44,6 +44,17 @@ public:
 
 	LightSpot* flashlight;
 
+	LightSpot* lightToControl;
+	glm::vec3 originlDirection;
+	float rotationX = 0.0f;
+
+	Model* jet;
+	Model* flashLightModel;
+
+
+
+	glm::mat4 rotateAlign(glm::vec3 v1, glm::vec3 v2);
+
 	Scene() { lights = vector<Light*>(); cameras = vector<Camera*>(); cubes = vector<Cube*>(); };
 	void AddLight(Light* light) { lights.push_back(light); }
 	void AddCamera(Camera* camera) { cameras.push_back(camera); }
@@ -78,12 +89,12 @@ public:
 	}
 
 	void DrawCubes(Shader& shader, unsigned int& cubeVAO);
-
 	void DrawSpheres(Shader& shader, unsigned int& sphereVAO);
-
 	void DrawModels(Shader& shaderTex, Shader& shaderCol);
-
 	void DrawModel(Shader& shader, Model& model);
+	void DrawLights(Shader& shader, unsigned int& lightVAO);
+	void DrawSpotLights(Shader& shader);
+
 	
 	void AddTextureModel(Model* model) { modelsTex.push_back(model); }
 	void AddColorModel(Model* model) { modelsCol.push_back(model); }
@@ -92,7 +103,7 @@ public:
 
 	
 
-	void DrawLights(Shader& shader, unsigned int& lightVAO);
+	
 
 	vector<Cube*> GetCubes() { return cubes; }
 	vector<Sphere*> GetSpheres() { return spheres; }
