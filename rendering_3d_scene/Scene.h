@@ -49,6 +49,10 @@ public:
 	float rotationX = 0.0f;
 	float rotationY = 0.0f;
 
+	bool alignLightWithJet = false;
+	bool rotateCubes = false;
+	bool moveCubes = false;
+
 	Model* jet;
 	Model* flashLightModel;
 
@@ -86,7 +90,7 @@ public:
 
 	glm::mat4 GetProjectionMatrix()
 	{
-		return glm::perspective(glm::radians(active_camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		return glm::perspective(glm::radians(active_camera->Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 400.0f);
 	}
 
 	void DrawCubes(Shader& shader, unsigned int& cubeVAO);

@@ -63,7 +63,7 @@ public:
     {
         if (!move) return;
 
-        float radius = 10;
+        float radius = 50;
         totalTime += deltaTime*2;
         position.x = sin(totalTime) * radius * cos(totalTime / 2) + 5 * sin(totalTime / 3);
         position.z = cos(totalTime / 2) * 10;

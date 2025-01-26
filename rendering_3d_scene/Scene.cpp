@@ -25,6 +25,8 @@ void Scene::Update(float deltaTime)
 {
 	for (Cube* cube : cubes) {
 		cube->UpdatePosition(deltaTime);
+		cube->rotate = rotateCubes;
+		cube->move = moveCubes;
 	}
 	for (Light* light : lights) {
 		if (light->GetType() != LightType::DIRECTIONAL)
@@ -48,10 +50,22 @@ void Scene::Update(float deltaTime)
 	}
 
 	//updating direction of the contorl light
-	glm::mat4 rotationMatrix = glm::mat4(1.0f);
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightToControl->direction = rotationMatrix * glm::normalize(glm::vec4(originlDirection,0));
+	if (alignLightWithJet)
+	{
+		lightToControl->direction = jet->velocity;
+	}
+	else
+	{
+		glm::mat4 rotationMatrix = glm::mat4(1.0f);
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+		lightToControl->direction = rotationMatrix * glm::normalize(glm::vec4(originlDirection, 0));
+	}
+	
+	
+	lightToControl->position = jet->position;
+
+	
 }
 
 void Scene::DrawCubes(Shader& shader, unsigned int& cubeVAO)
@@ -229,9 +243,9 @@ void Scene::CreateModels()
 	//AddColorModel(flashLightModel);
 	this->flashLightModel = flashLightModel;
 
-	Model* jet = new Model("C:/Users/pietr/Downloads/jet/uploads_files_1907948_F+15.obj", glm::vec3(0, 0, 0), 0.1, glm::vec3(1, 1, 0));
+	Model* jet = new Model("C:/Users/pietr/Downloads/jet/uploads_files_1907948_F+15.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	AddTextureModel(jet);
-	jet->move = false;
+	jet->move = true;
 	this->jet = jet;
 	jet->axisOfSymetry = glm::vec3(0, 0, 1);
 	
@@ -246,7 +260,7 @@ void Scene::CreateModels()
 }
 void Scene::CreateLights()
 {
-	/*Light* light1 = new LightPoint(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+	Light* light1 = new LightPoint(glm::vec3(1.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
 	AddLight(light1);
@@ -254,7 +268,7 @@ void Scene::CreateLights()
 	Light* light2 = new LightPoint(glm::vec3(10.2f, 1.0f, 2.0f), glm::vec3(1.0f, 1.0f, 1.0f),
 		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
-	AddLight(light2);*/
+	AddLight(light2);
 
 	Light* light3 = new LightDirectional(glm::vec3(-0.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
 		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),

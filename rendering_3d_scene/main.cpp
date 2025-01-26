@@ -240,6 +240,13 @@ void RenderImGui()
 		ImGui::Begin("Control reflector");
 		ImGui::SliderFloat("RotationX", &scene.rotationX, -180, 180);
 		ImGui::SliderFloat("RotationY", &scene.rotationY, -180, 180);
+		ImGui::Checkbox("Align with jet", &scene.alignLightWithJet);
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("Cubes");
+		ImGui::Checkbox("Rotate", &scene.rotateCubes);
+		ImGui::Checkbox("Move", &scene.moveCubes);
 		ImGui::End();
 	}
 
