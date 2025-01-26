@@ -47,9 +47,11 @@ void Scene::Update(float deltaTime)
 		model->Update(deltaTime);
 	}
 
-	glm::mat4 rotationMatrix = glm::mat3(1.0f);
-	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationX), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightToControl->direction = rotationMatrix * glm::vec4(originlDirection,1);
+	//updating direction of the contorl light
+	glm::mat4 rotationMatrix = glm::mat4(1.0f);
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
+	rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
+	lightToControl->direction = rotationMatrix * glm::normalize(glm::vec4(originlDirection,0));
 }
 
 void Scene::DrawCubes(Shader& shader, unsigned int& cubeVAO)
@@ -274,7 +276,7 @@ void Scene::CreateLights()
 	flashlight = (LightSpot*)light6;
 
 	Light* light5 = new LightSpot(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.000009f, 0.0000032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
-		, glm::vec3(0, 1, -1),
+		, glm::vec3(0, 0, 1),
 		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 	AddLight(light5);

@@ -238,7 +238,8 @@ void RenderImGui()
 	}
 	{
 		ImGui::Begin("Control reflector");
-		ImGui::SliderFloat("RotationX", &scene.rotationX, -90, 90);
+		ImGui::SliderFloat("RotationX", &scene.rotationX, -180, 180);
+		ImGui::SliderFloat("RotationY", &scene.rotationY, -180, 180);
 		ImGui::End();
 	}
 

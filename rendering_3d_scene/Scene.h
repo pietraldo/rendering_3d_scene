@@ -47,6 +47,7 @@ public:
 	LightSpot* lightToControl;
 	glm::vec3 originlDirection;
 	float rotationX = 0.0f;
+	float rotationY = 0.0f;
 
 	Model* jet;
 	Model* flashLightModel;
