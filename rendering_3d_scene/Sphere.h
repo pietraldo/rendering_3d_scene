@@ -31,6 +31,7 @@ public:
 	float radius;
 
 	glm::vec3 color;
+	glm::vec3 rotation = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	Sphere(glm::vec3 position, float radius, glm::vec3 color)
 		:position(position), radius(radius), color(color) {};

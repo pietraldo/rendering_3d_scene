@@ -48,6 +48,14 @@ void Scene::Update(float deltaTime)
 	{
 		model->Update(deltaTime);
 	}
+	for (Sphere* sphere : spheres)
+	{
+		if (sphereGo)
+		{
+			sphere->rotation.z += 360 * deltaTime;
+			sphere->position.x -= 2 * 3.1428 * deltaTime * sphere->radius;
+		}
+	}
 
 	//updating direction of the contorl light
 	if (alignLightWithJet)
@@ -74,7 +82,8 @@ void Scene::Update(float deltaTime)
 	
 	lightToControl->position = jet->position;
 
-	
+
+	UpdateFlashLight();
 }
 
 void Scene::DrawCubes(Shader& shader, unsigned int& cubeVAO)
@@ -109,6 +118,9 @@ void Scene::DrawSpheres(Shader& shader, unsigned int& sphereVAO)
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, sphere->position);
+		model = glm::rotate(model, glm::radians(sphere->rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(sphere->rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(sphere->rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, glm::vec3(sphere->radius));
 		shader.setMat4("model", model);
 		shader.setVec3("objectColor", sphere->color);
@@ -246,8 +258,8 @@ void Scene::CreateModels()
 
 	//Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	//AddColorModel(car);
-	Model* map = new Model("C:/Users/pietr/Downloads/udk0xohj4k-cityislands/City Islands/City Islands.obj", glm::vec3(0, -10, 0), 0.5, glm::vec3(1, 1, 0));
-	AddTextureModel(map);
+	//Model* map = new Model("C:/Users/pietr/Downloads/udk0xohj4k-cityislands/City Islands/City Islands.obj", glm::vec3(0, -10, 0), 0.5, glm::vec3(1, 1, 0));
+	//AddTextureModel(map);
 	Model* flashLightModel = new Model("C:/Users/pietr/Downloads/Flash.obj", glm::vec3(0, 0, 0), 0.1, glm::vec3(1, 1, 0));
 	//AddColorModel(flashLightModel);
 	this->flashLightModel = flashLightModel;

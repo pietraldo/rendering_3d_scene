@@ -1,5 +1,5 @@
 #include "Sphere.h"
 
 
-int Sphere::sectorCount = 36;
-int Sphere::stackCount = 18;
+int Sphere::sectorCount = 8;
+int Sphere::stackCount = 4;

@@ -54,6 +54,8 @@ public:
 	bool rotateCubes = false;
 	bool moveCubes = false;
 
+	bool sphereGo = false;
+
 	
 	Model* jet;
 	Model* flashLightModel;

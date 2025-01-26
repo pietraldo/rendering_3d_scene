@@ -160,7 +160,6 @@ int main()
 
 		
 		scene.Update(deltaTime);
-		scene.UpdateFlashLight();
 		
 		// setting proper shader
 		Shader& shaderColor = scene.Gouraud ? gouraudShader : ourShader;
@@ -251,6 +250,11 @@ void RenderImGui()
 		ImGui::Begin("Cubes");
 		ImGui::Checkbox("Rotate", &scene.rotateCubes);
 		ImGui::Checkbox("Move", &scene.moveCubes);
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("Sphere");
+		ImGui::Checkbox("Sphere go", &scene.sphereGo);
 		ImGui::End();
 	}
 
