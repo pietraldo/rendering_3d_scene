@@ -217,6 +217,9 @@ void RenderImGui()
 		{
 			ImGui::Checkbox(("Camera " + to_string(i)).c_str(), &cameras[i]->isActive);
 		}
+		ImGui::Text("Position: x: %.2f y: %.2f z: %.2f", scene.GetActiveCamera().Position.x, scene.GetActiveCamera().Position.y, scene.GetActiveCamera().Position.z);
+		ImGui::SliderFloat("Speed", &scene.GetActiveCamera().MovementSpeed, 1, 100);
+		ImGui::Text("Front: x: %.2f y: %.2f z: %.2f", scene.GetActiveCamera().Front.x, scene.GetActiveCamera().Front.y, scene.GetActiveCamera().Front.z);
 		ImGui::End();
 	}
 
@@ -238,6 +241,7 @@ void RenderImGui()
 	}
 	{
 		ImGui::Begin("Control reflector");
+		ImGui::Checkbox("Turn on", &scene.turnOnJetFlashlight);
 		ImGui::SliderFloat("RotationX", &scene.rotationX, -180, 180);
 		ImGui::SliderFloat("RotationY", &scene.rotationY, -180, 180);
 		ImGui::Checkbox("Align with jet", &scene.alignLightWithJet);

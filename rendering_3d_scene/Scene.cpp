@@ -61,7 +61,16 @@ void Scene::Update(float deltaTime)
 		rotationMatrix = glm::rotate(rotationMatrix, glm::radians(rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
 		lightToControl->direction = rotationMatrix * glm::normalize(glm::vec4(originlDirection, 0));
 	}
-	
+	if (turnOnJetFlashlight)
+	{
+		lightToControl->diffuse = glm::vec3(0.8f);
+		lightToControl->specular = glm::vec3(1.0f);
+	}
+	else
+	{
+		lightToControl->diffuse = glm::vec3(0.0f);
+		lightToControl->specular = glm::vec3(0.0f);
+	}
 	
 	lightToControl->position = jet->position;
 
@@ -231,14 +240,14 @@ void Scene::CreateObjects()
 void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	//Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
-	//AddTextureModel(spider);
+	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, -10, -50), 0.05, glm::vec3(1, 1, 1));
+	AddTextureModel(spider);
 
 
 	//Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	//AddColorModel(car);
-	/*Model* map = new Model("C:/Users/pietr/Downloads/udk0xohj4k-cityislands/City Islands/City Islands.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	AddTextureModel(map);*/
+	Model* map = new Model("C:/Users/pietr/Downloads/udk0xohj4k-cityislands/City Islands/City Islands.obj", glm::vec3(0, -10, 0), 0.5, glm::vec3(1, 1, 0));
+	AddTextureModel(map);
 	Model* flashLightModel = new Model("C:/Users/pietr/Downloads/Flash.obj", glm::vec3(0, 0, 0), 0.1, glm::vec3(1, 1, 0));
 	//AddColorModel(flashLightModel);
 	this->flashLightModel = flashLightModel;
@@ -251,8 +260,8 @@ void Scene::CreateModels()
 	
 
 	
-	//Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	//AddColorModel(alien);
+	Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
+	AddColorModel(alien);
 
 	//Model* tank = new Model("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
 		//glm::vec3(0, 0, 0), 0.01, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
@@ -270,6 +279,17 @@ void Scene::CreateLights()
 		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
 	AddLight(light2);
 
+	Light* light9 = new LightPoint(glm::vec3(150, -5, -102.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		1.0f, 0.009f, 0.0032f, glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AddLight(light9);
+
+	Light* light10 = new LightPoint(glm::vec3(-38, -4, 30.0f), glm::vec3(1.0f, 1.0f, 1.0f),
+		1.0f, 0.09f, 0.032f, glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(1.0f, 1.0f, 1.0f));
+	AddLight(light10);
+
+	
 	Light* light3 = new LightDirectional(glm::vec3(-0.2f, -1.0f, -0.3f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0, -1, 0),
 		glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
@@ -296,6 +316,26 @@ void Scene::CreateLights()
 	AddLight(light5);
 	lightToControl = (LightSpot*)light5;
 	originlDirection = lightToControl->direction;
+
+
+	// lights on bridge
+	Light* light12 = new LightSpot(glm::vec3(-42.0f, 15.0f, -152.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.000009f, 0.0000032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
+		, glm::vec3(-0.83, -0.56, 0),
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
+		glm::vec3(1.0f, 1.0f, 1.0f));
+	AddLight(light12);
+	// lights on bridge
+	Light* light13 = new LightSpot(glm::vec3(-88.0f, 15.0f, -152.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.000009f, 0.0000032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
+		, glm::vec3(0.74, -0.67, 0),
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
+		glm::vec3(1.0f, 1.0f, 1.0f));
+	AddLight(light13);
+	// lights on bridge
+	Light* light14 = new LightSpot(glm::vec3(-89, 15.0f, -159.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.000009f, 0.0000032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f))
+		, glm::vec3(0.8, -0.59, 0.05),
+		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
+		glm::vec3(1.0f, 1.0f, 1.0f));
+	AddLight(light14);
 }
 void Scene::CreateCameras()
 {

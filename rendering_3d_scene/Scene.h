@@ -44,6 +44,7 @@ public:
 
 	LightSpot* flashlight;
 
+	bool turnOnJetFlashlight = true;
 	LightSpot* lightToControl;
 	glm::vec3 originlDirection;
 	float rotationX = 0.0f;
@@ -53,6 +54,7 @@ public:
 	bool rotateCubes = false;
 	bool moveCubes = false;
 
+	
 	Model* jet;
 	Model* flashLightModel;
 
