@@ -252,7 +252,7 @@ void Scene::CreateObjects()
 void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, -10, -50), 0.05, glm::vec3(1, 1, 1));
+	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, -50), 0.3, glm::vec3(1, 1, 1));
 	AddTextureModel(spider);
 
 
@@ -276,7 +276,7 @@ void Scene::CreateModels()
 	AddColorModel(alien);
 
 	Model* tank = new Model("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
-		glm::vec3(0, 0, 0), 0.01, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
+		glm::vec3(90, 0, -90), 0.1, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
 	AddColorModel(tank);
 }
 void Scene::CreateLights()
