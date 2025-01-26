@@ -133,12 +133,18 @@ void Scene::CreateObjects()
 void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
-	AddTextureModel(spider);
+	//Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
+	//AddTextureModel(spider);
 
 
 	//Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	//AddColorModel(car);
+	/*Model* map = new Model("C:/Users/pietr/Downloads/udk0xohj4k-cityislands/City Islands/City Islands.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
+	AddTextureModel(map);*/
+	Model* jet = new Model("C:/Users/pietr/Downloads/jet/uploads_files_1907948_F+15.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
+	AddTextureModel(jet);
+
+
 	
 	//Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
 	//AddColorModel(alien);
