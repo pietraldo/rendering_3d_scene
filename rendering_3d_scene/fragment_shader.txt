@@ -40,9 +40,11 @@ struct SpotLight {
 
 in vec3 Normal;
 in vec3 FragPos;
+in vec4 fposition;
 
 uniform vec3 viewPos;
 uniform vec3 objectColor;
+uniform bool fogEnabled;
 
 #define MAX_NR_DIR_LIGHTS 10
 #define MAX_NR_POINT_LIGHTS 10
@@ -87,7 +89,22 @@ void main()
 		result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);    
 	}
 
-    FragColor = vec4(result,1);
+    float fog_maxdist = 40.0;
+    float fog_mindist = 10.0;
+    vec4  fog_colour = vec4(0.0, 0.0, 0.0, 1.0);
+
+    // Calculate fog
+    float dist = length(fposition.xyz);
+    float fog_factor = (fog_maxdist - dist) /
+                      (fog_maxdist - fog_mindist);
+    fog_factor = clamp(fog_factor, 0.0, 1.0);
+
+    vec4 shadedColor = vec4(result,1);
+
+    if(fogEnabled)
+        FragColor = mix(fog_colour, shadedColor, fog_factor);
+    else
+        FragColor = shadedColor;
 }
 
 // calculates the color when using a directional light.

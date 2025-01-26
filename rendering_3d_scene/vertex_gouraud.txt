@@ -44,6 +44,7 @@ struct SpotLight {
 
 
 out vec4 ourColor;
+out vec4 fposition;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -79,7 +80,7 @@ void main()
     vec3 Normal = mat3(transpose(inverse(model))) * aNormal;  
 
     gl_Position = projection * view * vec4(FragPos, 1.0);
-
+    fposition = gl_Position;
    
 
     // make sure to set this uniform to the current number of lights

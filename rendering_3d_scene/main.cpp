@@ -219,6 +219,7 @@ void RenderImGui()
 		ImGui::Begin("Light settings");
 		ImGui::Checkbox("Day/Night", &scene.dayNight);
 		ImGui::Checkbox("Gouraud", &scene.Gouraud);
+		ImGui::Checkbox("Fog", &scene.fog);
 		ImGui::End();
 	}
 

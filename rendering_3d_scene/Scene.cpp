@@ -53,6 +53,7 @@ void Scene::DrawCubes(Shader& shader, unsigned int& cubeVAO)
 	shader.setMat4("projection", GetProjectionMatrix());
 	shader.setMat4("view", GetViewMatrix());
 	shader.setVec3("viewPos", active_camera->Position);
+	shader.setBool("fogEnabled", fog);
 
 	for (Cube* cube : cubes)
 	{
@@ -71,6 +72,7 @@ void Scene::DrawSpheres(Shader& shader, unsigned int& sphereVAO)
 	shader.setMat4("projection", GetProjectionMatrix());
 	shader.setMat4("view", GetViewMatrix());
 	shader.setVec3("viewPos", active_camera->Position);
+	shader.setBool("fogEnabled", fog);
 
 	for (Sphere* sphere : spheres)
 	{
@@ -104,6 +106,7 @@ void Scene::DrawModel(Shader& shader, Model& model)
 	shader.setMat4("view", GetViewMatrix());
 	shader.setVec3("viewPos", active_camera->Position);
 	shader.setVec3("objectColor", model.color);
+	shader.setBool("fogEnabled", fog);
 
 	glm::mat4 modelMatrix = glm::mat4(1.0f);
 	modelMatrix = glm::translate(modelMatrix, model.position);
@@ -130,8 +133,8 @@ void Scene::CreateObjects()
 void Scene::CreateModels()
 {
 	//Model ourModel("C:/Users/pietr/Desktop/city/uploads_files_2720101_BusGameMap.obj");
-	/*Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
-	AddTextureModel(spider);*/
+	Model* spider = new Model("C:/Users/pietr/Downloads/spider/spider.obj", glm::vec3(0, 0, 0), 0.05, glm::vec3(1, 1, 1));
+	AddTextureModel(spider);
 
 
 	Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
