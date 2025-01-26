@@ -206,15 +206,17 @@ void Scene::CreateCubes()
 		Cube* cube = new Cube(position, scale, color, rotation);
 		AddCube(cube);
 	}
-	cubes[0]->SetVelocity(glm::vec3(1.0f, 0.3f, 3.0f));
+	cubes[0]->move = true;
 }
 
 void Scene::CreateSpheres()
 {
+	int render_radius = 50;
 	// create a few spheres
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 40; i++)
 	{
-		glm::vec3 position = glm::vec3(rand() % 10 - 5, rand() % 10 - 5, rand() % 10 - 5);
+
+		glm::vec3 position = glm::vec3(rand() % render_radius - render_radius/2, rand() % render_radius - render_radius / 2, rand() % render_radius - render_radius / 2);
 		float radius = rand() % 4;
 		glm::vec3 color = glm::vec3((rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f, (rand() % 50 + 50) / 100.0f);
 		Sphere* sphere = new Sphere(position, radius, color);

@@ -57,19 +57,27 @@ glm::mat4 Cube::GetModelMatrix()
 
 void Cube::UpdatePosition(float deltaTime)
 {
-	//velocity += acceleration * deltaTime;
-	position += velocity * deltaTime;
+	if (!move) return;
+	float radius = 10;
+	totalTime += deltaTime;
+	position.x = sin(totalTime) * radius *cos(totalTime/2)+5*sin(totalTime/3);
+	position.z = cos(totalTime/2) * 10;
+	position.y = 0;
+	velocity = position - lastPosition;
+	lastPosition = position;
+	////velocity += acceleration * deltaTime;
+	//position += velocity * deltaTime;
 
-	if (position.x > 10.0f || position.x < -10.0f)
-	{
-		velocity.x = -velocity.x;
-	}
-	if (position.y > 10.0f || position.y < -10.0f)
-	{
-		velocity.y = -velocity.y;
-	}
-	if (position.z > 10.0f || position.z < -10.0f)
-	{
-		velocity.z = -velocity.z;
-	}
+	//if (position.x > 10.0f || position.x < -10.0f)
+	//{
+	//	velocity.x = -velocity.x;
+	//}
+	//if (position.y > 10.0f || position.y < -10.0f)
+	//{
+	//	velocity.y = -velocity.y;
+	//}
+	//if (position.z > 10.0f || position.z < -10.0f)
+	//{
+	//	velocity.z = -velocity.z;
+	//}
 }

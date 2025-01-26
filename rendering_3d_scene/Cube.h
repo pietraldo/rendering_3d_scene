@@ -15,6 +15,10 @@ private:
 	glm::vec3 velocity=glm::vec3(0,0,0);
 	glm::vec3 acceleration;
 	glm::vec3 rotationVelocity;
+
+	
+	float totalTime = 0.0f;
+	glm::vec3 lastPosition = glm::vec3(0);
 public:
 	Cube(glm::vec3 position, glm::vec3 scale, glm::vec3 color, glm::vec3 rotation)
 		:position(position), scale(scale), color(color), rotation(rotation) {};
@@ -23,6 +27,8 @@ public:
 	glm::vec3 GetColor() { return color; }
 	glm::vec3 GetRotation() { return rotation; }
 	glm::mat4 GetModelMatrix();
+
+	bool move = false;
 
 	void SetVelocity(glm::vec3 velocity) { this->velocity = velocity; }
 	glm::vec3 GetVelocity(){ return velocity; }
