@@ -40,6 +40,9 @@ public:
 	bool dayNight = true;
 	bool Gouraud = false;
 	bool fog = false;
+	bool userFlashlight = false;
+
+	LightSpot* flashlight;
 
 	Scene() { lights = vector<Light*>(); cameras = vector<Camera*>(); cubes = vector<Cube*>(); };
 	void AddLight(Light* light) { lights.push_back(light); }
@@ -49,7 +52,21 @@ public:
 	void SetActiveCamera(int index);
 	Camera& Scene::GetActiveCamera();
 	void Update(float deltaTime);
-
+	void UpdateFlashLight()
+	{
+		if (userFlashlight)
+		{
+			flashlight->specular = glm::vec3(1.0f);
+			flashlight->diffuse = glm::vec3(0.6f);
+			flashlight->ambient = glm::vec3(0.0f);
+		}
+		else
+		{
+			flashlight->specular = glm::vec3(0.0f);
+			flashlight->diffuse = glm::vec3(0.0f);
+			flashlight->ambient = glm::vec3(0.0f);
+		}
+	}
 	glm::mat4 GetViewMatrix()
 	{
 		return active_camera->GetViewMatrix();

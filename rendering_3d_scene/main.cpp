@@ -79,7 +79,7 @@ int main()
 
 	scene.CreateObjects();
 	scene.SetActiveCamera(0);
-
+	
 	
 
 	vector<float> vert = Sphere::CreateVertices();
@@ -158,6 +158,10 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
+		scene.Update(deltaTime);
+		scene.UpdateFlashLight();
+		
 		// setting proper shader
 		Shader& shaderColor = scene.Gouraud ? gouraudShader : ourShader;
 
@@ -171,7 +175,9 @@ int main()
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 		
-		scene.Update(deltaTime);
+		
+
+		
 
 		// setting cameras
 		Cube* cube0 = scene.GetCubes()[0];
@@ -220,6 +226,15 @@ void RenderImGui()
 		ImGui::Checkbox("Day/Night", &scene.dayNight);
 		ImGui::Checkbox("Gouraud", &scene.Gouraud);
 		ImGui::Checkbox("Fog", &scene.fog);
+		ImGui::End();
+	}
+	{
+		ImGui::Begin("Flashlight settings");
+		ImGui::Checkbox("Turn on", &scene.userFlashlight);
+		ImGui::SliderFloat("Linear", &scene.flashlight->linear,0,0.1);
+		ImGui::SliderFloat("Quadratic", &scene.flashlight->quadratic,0,0.1);
+		ImGui::SliderFloat("CutOff", &scene.flashlight->cutOff, 0.9, 1);
+		ImGui::SliderFloat("OuterCutOff", &scene.flashlight->outerCutOff, 0.9, 1);
 		ImGui::End();
 	}
 

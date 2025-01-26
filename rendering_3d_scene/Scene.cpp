@@ -137,11 +137,11 @@ void Scene::CreateModels()
 	AddTextureModel(spider);
 
 
-	Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	AddColorModel(car);
+	//Model* car = new Model("C:/Users/pietr/Downloads/ferrari-288-gto/source/ferrari 288 gto/ferrari 288 gto.obj", glm::vec3(0, 0, 0), 0.5, glm::vec3(1, 1, 0));
+	//AddColorModel(car);
 	
-	Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
-	AddColorModel(alien);
+	//Model* alien = new Model("C:/Users/pietr/Downloads/20-alienanimal_obj/Alien Animal.obj", glm::vec3(-15, 0, 0), 0.5, glm::vec3(1, 1, 0));
+	//AddColorModel(alien);
 
 	//Model* tank = new Model("C:/Users/pietr/Downloads/challenger-1-main-battle-tank/source/Challenger 1 Main Battle Tank/Challenger 1 Main Battle Tank.obj",
 		//glm::vec3(0, 0, 0), 0.01, glm::vec3(0.4, 1, 0.4), glm::vec3(-90, 0, 0));
@@ -174,6 +174,7 @@ void Scene::CreateLights()
 		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.8f, 0.8f, 0.8f),
 		glm::vec3(1.0f, 1.0f, 1.0f));
 	AddLight(light5);
+	flashlight = (LightSpot*)light5;
 }
 void Scene::CreateCameras()
 {
